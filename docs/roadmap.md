@@ -27,10 +27,13 @@ de uma vez só, inconsistente entre módulos).
 
 - Sprint 3 depende de decidir o provedor da API de compilação (Judge0,
   JDoodle ou similar) e montar o proxy que esconde a chave de API.
-  **Confirmado no Sprint 3:** foi Judge0 CE via RapidAPI — mas o proxy
-  ainda NÃO existe. A chave fica no `localStorage` do professor (ver
-  docs/api.md). Isso precisa virar prioridade antes de usar com turmas
-  reais em produção.
+  **Confirmado no Sprint 3:** começou como Judge0 CE via RapidAPI, mas
+  trocou para **JDoodle** — o Judge0 no RapidAPI exige cartão de crédito
+  mesmo no plano gratuito (política deles pra APIs "freemium"), e o
+  professor preferiu evitar isso. O JDoodle dá 200 execuções grátis por
+  dia sem cartão. O proxy que esconde as credenciais ainda NÃO existe —
+  elas ficam no `localStorage` do professor (ver docs/api.md). Isso
+  precisa virar prioridade antes de usar com turmas reais em produção.
 - Sprint 6 precisa baixar os bundles do Monaco/xterm para servir local,
   já que CDN quebra o requisito de uso 100% offline em laboratório.
   **Confirmado no Sprint 2:** o Monaco está sendo servido via

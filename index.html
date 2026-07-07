@@ -165,7 +165,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M15 4v16" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
 
-          <span class="editor-pane__note">Compilação real via Judge0 — configure sua chave de API na engrenagem</span>
+          <span class="editor-pane__note">Compilação real via JDoodle — configure suas credenciais na engrenagem</span>
         </div>
       </section>
 
@@ -239,12 +239,17 @@
   </div>
   <div class="missions-drawer__body">
     <div class="settings-field">
-      <label for="input-judge0-key">Chave de API — Judge0 (RapidAPI)</label>
-      <input type="password" id="input-judge0-key" placeholder="Cole sua chave aqui" autocomplete="off">
+      <label for="input-jdoodle-client-id">Client ID — JDoodle</label>
+      <input type="text" id="input-jdoodle-client-id" placeholder="Cole seu Client ID aqui" autocomplete="off">
+    </div>
+    <div class="settings-field">
+      <label for="input-jdoodle-client-secret">Client Secret — JDoodle</label>
+      <input type="password" id="input-jdoodle-client-secret" placeholder="Cole seu Client Secret aqui" autocomplete="off">
       <p class="settings-field__hint">
-        Necessária para compilar C/C++ de verdade. Crie uma chave gratuita em
-        <a href="https://rapidapi.com/judge0-official/api/judge0-ce" target="_blank" rel="noopener">rapidapi.com/judge0-official/api/judge0-ce</a>
-        e cole aqui. Fica salva só neste navegador — nunca é enviada a nenhum outro lugar além do Judge0.
+        Necessário para compilar C/C++ de verdade. Crie uma conta gratuita em
+        <a href="https://www.jdoodle.com/compiler-api" target="_blank" rel="noopener">jdoodle.com/compiler-api</a>
+        (200 execuções grátis por dia, sem cartão) e copie as duas credenciais do seu painel.
+        Ficam salvas só neste navegador — nunca são enviadas a nenhum outro lugar além do JDoodle.
       </p>
     </div>
     <button class="btn btn--primary" type="button" id="btn-save-settings">Salvar</button>

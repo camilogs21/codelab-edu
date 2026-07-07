@@ -54,7 +54,7 @@ implementação por dentro sem exigir mudanças em quem consome.
 | `lessons.js` | `getCurrentLesson()` (cresce no Sprint 4) |
 | `projects.js` | `getAvailableProjects()` (cresce no sprint de Projetos) |
 | `achievements.js` | `getUnlockedAchievements()`, `checkAchievement(event, payload)` |
-| `config.js` | Constantes: `STORAGE_NAMESPACE`, `XP_PER_LEVEL`, `LANGUAGES`, `JUDGE0`, `EDITOR_DEFAULTS`, `TERMINAL_DEFAULTS` |
+| `config.js` | Constantes: `STORAGE_NAMESPACE`, `XP_PER_LEVEL`, `LANGUAGES`, `JDOODLE`, `EDITOR_DEFAULTS`, `TERMINAL_DEFAULTS` |
 
 `getValue()/onChange()/focus()` mantiveram exatamente a assinatura do
 Sprint 1 mesmo trocando textarea por Monaco por baixo — é o contrato

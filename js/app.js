@@ -6,7 +6,7 @@
  * Sprint 2: o Monaco Editor carrega de forma assíncrona (via CDN), então
  * o bootstrap agora é async e aguarda `initEditor()` antes de montar o
  * workbench (explorer + abas), que depende do editor já existir.
- * Sprint 3: terminal real (xterm.js) e compilação real (Judge0) entram
+ * Sprint 3: terminal real (xterm.js) e compilação real (JDoodle) entram
  * na mesma ordem de sempre — nenhuma mudança estrutural aqui.
  */
 
@@ -27,7 +27,7 @@ async function bootstrap() {
   initUI();
 
   console.info(
-    "%cCodeLab EDU%c — Sprint 3: terminal real + compilação Judge0 ✅",
+    "%cCodeLab EDU%c — Sprint 3: terminal real + compilação JDoodle ✅",
     "color:#e2965a;font-weight:700",
     "color:inherit"
   );

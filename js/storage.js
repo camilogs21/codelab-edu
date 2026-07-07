@@ -50,11 +50,12 @@ export const DEFAULT_STATE = {
   lastCode: "",
   settings: {
     fontSize: EDITOR_DEFAULTS.fontSize,
-    // Chave pessoal do professor para a API Judge0 (RapidAPI). Nunca vem
-    // hardcoded no código-fonte — só existe depois que o próprio
-    // professor a digita no painel de Configurações. Ver aviso de
-    // segurança completo em config.js (JUDGE0) e docs/api.md.
-    judge0ApiKey: "",
+    // Credenciais pessoais do professor para a API JDoodle. Nunca vêm
+    // hardcoded no código-fonte — só existem depois que o próprio
+    // professor as digita no painel de Configurações. Ver aviso de
+    // segurança completo em config.js (JDOODLE) e docs/api.md.
+    jdoodleClientId: "",
+    jdoodleClientSecret: "",
   },
 };
 

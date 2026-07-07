@@ -1,99 +1,68 @@
 /**
  * compiler.js
- * Sprint 3: integração real com Judge0 CE (via RapidAPI) para compilar e
- * executar C/C++. O contrato público (`compileAndRun`) é o mesmo definido
- * no Sprint 1 — só a implementação por dentro mudou, exatamente como o
- * README prometeu.
- *
- * Ver o aviso de segurança completo em config.js (JUDGE0) e em
- * docs/api.md: a chave de API vem do professor via Configurações e fica
- * só no localStorage do navegador dele, nunca commitada no repositório.
+ * Sprint 3: integração real com a API do JDoodle para compilar e
+ * executar C/C++ — trocado do Judge0 (ver config.js e docs/api.md para
+ * o motivo da troca: Judge0/RapidAPI exige cartão até no plano grátis).
+ * O contrato público (`compileAndRun`) continua o mesmo definido no
+ * Sprint 1 — só a implementação por dentro mudou.
  */
 
-import { JUDGE0 } from "./config.js";
+import { JDOODLE } from "./config.js";
 import { get } from "./storage.js";
 
-/** Codifica texto em base64 (Judge0 exige base64 quando base64_encoded=true). */
-function toBase64(text) {
-  return btoa(unescape(encodeURIComponent(text ?? "")));
-}
-
-/** Decodifica um campo base64 vindo do Judge0. Retorna string vazia se nulo. */
-function fromBase64(value) {
-  if (!value) return "";
-  try {
-    return decodeURIComponent(escape(atob(value)));
-  } catch {
-    return value;
-  }
-}
-
-/** Lê a chave de API salva pelo professor no painel de Configurações. */
-function getApiKey() {
+/** Lê as credenciais salvas pelo professor no painel de Configurações. */
+function getCredentials() {
   const state = get("state", {});
-  return state?.settings?.judge0ApiKey || "";
+  return {
+    clientId: state?.settings?.jdoodleClientId || "",
+    clientSecret: state?.settings?.jdoodleClientSecret || "",
+  };
 }
 
 /**
- * Compila e executa um código-fonte via Judge0 CE.
+ * Compila e executa um código-fonte via JDoodle.
  * @param {string} code       Código-fonte C/C++.
  * @param {string} stdin      Entrada padrão fornecida pelo aluno.
  * @param {"c"|"cpp"} language
  * @returns {Promise<{stdout: string, stderr: string, exitCode: number, compileOutput: string}>}
  */
 export async function compileAndRun(code, stdin = "", language = "cpp") {
-  const apiKey = getApiKey();
+  const { clientId, clientSecret } = getCredentials();
 
-  if (!apiKey) {
+  if (!clientId || !clientSecret) {
     return {
       stdout: "",
       stderr:
-        "Nenhuma chave de API configurada. Abra Configurações (engrenagem na barra lateral) " +
-        "e cole sua chave do Judge0 (RapidAPI) para compilar de verdade.",
+        "Client ID/Secret do JDoodle não configurados. Abra Configurações (engrenagem na " +
+        "barra lateral) e cole suas credenciais gratuitas para compilar de verdade.",
       exitCode: 1,
       compileOutput: "",
     };
   }
 
-  const languageId = JUDGE0.languageIds[language] ?? JUDGE0.languageIds.cpp;
-  const url = `${JUDGE0.baseUrl}/submissions?base64_encoded=true&wait=true&fields=*`;
+  const langConfig = JDOODLE.languages[language] ?? JDOODLE.languages.cpp;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), JUDGE0.timeoutMs);
+  const timeout = setTimeout(() => controller.abort(), JDOODLE.timeoutMs);
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(JDOODLE.executeUrl, {
       method: "POST",
       signal: controller.signal,
-      headers: {
-        "content-type": "application/json",
-        "X-RapidAPI-Key": apiKey,
-        "X-RapidAPI-Host": JUDGE0.host,
-      },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        language_id: languageId,
-        source_code: toBase64(code),
-        stdin: toBase64(stdin),
+        clientId,
+        clientSecret,
+        script: code,
+        stdin,
+        language: langConfig.language,
+        versionIndex: langConfig.versionIndex,
       }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
-        return {
-          stdout: "",
-          stderr: "Chave de API inválida ou expirada. Confira em Configurações.",
-          exitCode: 1,
-          compileOutput: "",
-        };
-      }
-      if (response.status === 429) {
-        return {
-          stdout: "",
-          stderr: "Limite de requisições da API atingido por hoje. Tente novamente mais tarde.",
-          exitCode: 1,
-          compileOutput: "",
-        };
-      }
       return {
         stdout: "",
         stderr: `Falha ao contactar o serviço de compilação (HTTP ${response.status}).`,
@@ -102,13 +71,36 @@ export async function compileAndRun(code, stdin = "", language = "cpp") {
       };
     }
 
-    const data = await response.json();
+    // A API do JDoodle retorna HTTP 200 mesmo em vários casos de erro de
+    // credenciais/limite — o campo `error` é quem realmente indica isso.
+    if (data.error) {
+      const message = String(data.error);
+      if (/invalid/i.test(message) || data.statusCode === 401) {
+        return {
+          stdout: "",
+          stderr: "Client ID/Secret inválidos. Confira em Configurações.",
+          exitCode: 1,
+          compileOutput: "",
+        };
+      }
+      if (/limit/i.test(message)) {
+        return {
+          stdout: "",
+          stderr: "Limite diário de 200 execuções do JDoodle atingido. Tente novamente amanhã.",
+          exitCode: 1,
+          compileOutput: "",
+        };
+      }
+      return { stdout: "", stderr: message, exitCode: 1, compileOutput: "" };
+    }
+
+    const isSuccess = data.isExecutionSuccess !== false;
     return {
-      stdout: fromBase64(data.stdout),
-      stderr: fromBase64(data.stderr),
-      compileOutput: fromBase64(data.compile_output),
-      exitCode: data.status?.id === 3 ? 0 : 1, // status.id 3 = "Accepted" no Judge0
-      statusDescription: data.status?.description ?? "",
+      stdout: data.output ?? "",
+      stderr: isSuccess ? "" : data.output ?? "Erro na execução.",
+      compileOutput: data.isCompiled === false ? data.output ?? "" : "",
+      exitCode: isSuccess ? 0 : 1,
+      statusDescription: isSuccess ? "OK" : "Erro",
     };
   } catch (err) {
     const timedOut = err.name === "AbortError";

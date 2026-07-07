@@ -31,26 +31,27 @@ export const LANGUAGES = {
 /**
  * Configuração da API de compilação (Sprint 3).
  *
- * Decisão confirmada com o professor: Judge0 CE via RapidAPI.
+ * Decisão final: JDoodle, não Judge0. Motivo da troca (documentado com
+ * mais detalhe em docs/api.md): o plano gratuito do Judge0 no RapidAPI
+ * exige cartão de crédito (política do RapidAPI para APIs "freemium",
+ * mesmo no tier de $0,00). O JDoodle oferece 200 chamadas grátis por dia
+ * só com um cadastro por e-mail, sem cartão.
  *
- * IMPORTANTE — trade-off de segurança aceito conscientemente neste sprint:
- * o ideal (documentado em docs/api.md) é nunca expor a chave de API no
- * front-end, usando um proxy serverless. Como este projeto ainda não tem
- * um backend hospedado, a chave é fornecida pelo PRÓPRIO PROFESSOR através
- * do painel de Configurações e fica salva só no localStorage do
- * navegador dele — nunca commitada no repositório, nunca hardcoded aqui.
- * Isso é aceitável para uso de um único professor testando/demonstrando
- * a plataforma, mas NÃO é seguro para destravar em produção com a chave
- * de um aluno-administrador só — antes de distribuir pra várias turmas,
- * construir o proxy vira prioridade (ver docs/api.md).
+ * IMPORTANTE — trade-off de segurança aceito conscientemente neste
+ * sprint: o ideal é nunca expor client secret no front-end, usando um
+ * proxy serverless. Como este projeto ainda não tem um backend
+ * hospedado, o Client ID/Secret são fornecidos pelo PRÓPRIO PROFESSOR
+ * através do painel de Configurações e ficam salvos só no localStorage
+ * dele — nunca commitados no repositório, nunca hardcoded aqui. Ver
+ * docs/api.md para o plano de resolver isso quando houver backend.
  */
-export const JUDGE0 = {
-  host: "judge0-ce.p.rapidapi.com",
-  baseUrl: "https://judge0-ce.p.rapidapi.com",
-  // IDs de linguagem do Judge0 CE (GET /languages) — GCC 9.2.0.
-  languageIds: {
-    c: 50,
-    cpp: 54,
+export const JDOODLE = {
+  executeUrl: "https://api.jdoodle.com/v1/execute",
+  // Códigos de linguagem/versão do JDoodle (ver "Supported languages &
+  // versions" na doc oficial — tabela atualizada em 03/07/2026).
+  languages: {
+    c: { language: "c", versionIndex: "7" }, // GCC 15.2.1
+    cpp: { language: "cpp", versionIndex: "7" }, // GCC 15.2.1
   },
   timeoutMs: 15000,
 };

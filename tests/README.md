@@ -9,12 +9,12 @@ entrega de sprint:
 
 ## Checklist do Sprint 3
 
-- [ ] Abrir Configurações (engrenagem), colar uma chave válida do Judge0 e salvar
-- [ ] Recarregar a página — a chave continua salva (persistida)
-- [ ] Clicar em "Executar" sem chave configurada → mensagem clara pedindo pra configurar, sem travar a UI
+- [ ] Abrir Configurações (engrenagem), colar Client ID + Client Secret válidos do JDoodle e salvar
+- [ ] Recarregar a página — as credenciais continuam salvas (persistidas)
+- [ ] Clicar em "Executar" sem credenciais configuradas → mensagem clara pedindo pra configurar, sem travar a UI
 - [ ] Clicar em "Executar" com um `cout << "ola" << endl;` → saída aparece em verde no terminal
 - [ ] Rodar um código com erro de sintaxe proposital → erro de compilação aparece em vermelho
-- [ ] Testar com uma chave inválida → mensagem específica de chave inválida (não uma tela em branco)
+- [ ] Testar com credenciais inválidas → mensagem específica de credenciais inválidas (não uma tela em branco)
 - [ ] Limpar terminal (ícone de lixeira) funciona
 - [ ] Terminal se redimensiona corretamente ao abrir/fechar o painel de ajuda
 - [ ] Sem internet (modo avião) → mensagem de falha de conexão, não trava o botão "Executar"

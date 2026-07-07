@@ -170,21 +170,30 @@ function initMissionsDrawer() {
 function initSettingsDrawer() {
   const drawer = qs("#settings-drawer");
   const overlay = qs("#drawer-overlay");
-  const input = qs("#input-judge0-key");
-  if (!drawer || !overlay || !input) return null;
+  const inputId = qs("#input-jdoodle-client-id");
+  const inputSecret = qs("#input-jdoodle-client-secret");
+  if (!drawer || !overlay || !inputId || !inputSecret) return null;
 
   const { open, close } = createDrawerController(drawer, overlay);
 
   qs("#btn-settings")?.addEventListener("click", () => {
     const state = get("state", {});
-    input.value = state?.settings?.judge0ApiKey || "";
+    inputId.value = state?.settings?.jdoodleClientId || "";
+    inputSecret.value = state?.settings?.jdoodleClientSecret || "";
     open();
   });
   qs("#btn-close-settings")?.addEventListener("click", close);
 
   qs("#btn-save-settings")?.addEventListener("click", () => {
     const state = get("state", {});
-    set("state", { ...state, settings: { ...(state.settings || {}), judge0ApiKey: input.value.trim() } });
+    set("state", {
+      ...state,
+      settings: {
+        ...(state.settings || {}),
+        jdoodleClientId: inputId.value.trim(),
+        jdoodleClientSecret: inputSecret.value.trim(),
+      },
+    });
     const status = qs("#settings-save-status");
     if (status) {
       status.hidden = false;
@@ -273,7 +282,7 @@ function initHelpPanel() {
 }
 
 /* ---------------------------------------------------------------------
- * Executar — Sprint 3: compilação real via Judge0 (compiler.js)
+ * Executar — Sprint 3: compilação real via JDoodle (compiler.js)
  * ------------------------------------------------------------------- */
 
 function initRunButton() {

@@ -46,7 +46,7 @@ export function initTerminal() {
   fitAddon.fit();
 
   writeLine(`${ANSI.gray}CodeLab EDU — terminal pronto.${ANSI.reset}`);
-  writeLine(`${ANSI.gray}Compilação real via Judge0. Configure sua chave em Configurações.${ANSI.reset}`);
+  writeLine(`${ANSI.gray}Compilação real via JDoodle. Configure suas credenciais em Configurações.${ANSI.reset}`);
 
   // Reajusta o terminal sempre que a janela (ou o painel) mudar de tamanho.
   window.addEventListener("resize", () => fitAddon?.fit());
