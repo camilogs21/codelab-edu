@@ -7,7 +7,7 @@
  */
 
 import { safeJsonParse } from "./utils.js";
-import { STORAGE_NAMESPACE } from "./config.js";
+import { STORAGE_NAMESPACE, EDITOR_DEFAULTS } from "./config.js";
 
 /** Monta a chave final prefixada pelo namespace da plataforma. */
 function key(name) {
@@ -49,7 +49,7 @@ export const DEFAULT_STATE = {
   lastLessonId: null,
   lastCode: "",
   settings: {
-    fontSize: 14,
+    fontSize: EDITOR_DEFAULTS.fontSize,
   },
 };
 

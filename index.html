@@ -11,6 +11,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- Monaco Editor via CDN (Sprint 2). Carregado como AMD; o require.config
+     aponta a base 'vs' para o CDN. Sprint 6 baixa esses arquivos para
+     servir localmente e permitir uso 100% offline. -->
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs/loader.js"></script>
+
 <!-- Design tokens primeiro, depois os módulos de layout -->
 <link rel="stylesheet" href="css/themes.css">
 <link rel="stylesheet" href="css/main.css">
@@ -118,74 +123,42 @@
         </div>
       </div>
 
-      <div class="sidebar__section is-open">
-        <button class="sidebar__section-title" type="button" aria-expanded="true">
-          <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"/></svg>
-          CODELAB-EDU
-        </button>
-        <ul class="filetree" id="explorer-tree" role="tree">
-          <li role="treeitem" class="filetree__folder is-open">
-            <span class="filetree__icon">📁</span> aulas
-            <ul>
-              <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> 01-introducao.cpp</li>
-              <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> 02-variaveis.cpp</li>
-              <li role="treeitem" class="filetree__file is-active"><span class="filetree__icon">📄</span> 03-condicionais.cpp</li>
-            </ul>
-          </li>
-          <li role="treeitem" class="filetree__folder">
-            <span class="filetree__icon">📁</span> projetos
-            <ul>
-              <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> calculadora.cpp</li>
-              <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> jogo-da-forca.cpp</li>
-            </ul>
-          </li>
-          <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> main.cpp</li>
-        </ul>
+      <div class="sidebar__section-title">
+        CODELAB-EDU
       </div>
+      <!-- Renderizada dinamicamente por explorer.js a partir de FILES -->
+      <ul class="filetree" id="explorer-tree" role="tree" aria-label="Arquivos do projeto"></ul>
     </aside>
 
     <!-- ÁREA CENTRAL: EDITOR + TERMINAL -->
     <main class="workbench" id="editor-main">
 
-      <div class="tabbar" role="tablist" aria-label="Arquivos abertos">
-        <div class="tab is-active" role="tab" aria-selected="true">
-          <span class="tab__icon">📄</span> 03-condicionais.cpp
-          <button class="tab__close" aria-label="Fechar aba">×</button>
-        </div>
-        <div class="tab" role="tab" aria-selected="false">
-          <span class="tab__icon">📄</span> main.cpp
-          <button class="tab__close" aria-label="Fechar aba">×</button>
-        </div>
-      </div>
+      <!-- Renderizada dinamicamente por ui.js a partir dos arquivos abertos -->
+      <div class="tabbar" id="tabbar" role="tablist" aria-label="Arquivos abertos"></div>
 
       <section class="editor-pane" aria-label="Editor de código">
-        <!-- Placeholder do Sprint 1. Monaco Editor substitui este bloco no Sprint 2. -->
-        <div class="editor-placeholder" id="editor-placeholder">
-          <div class="editor-placeholder__gutter" id="editor-gutter"></div>
-          <textarea
-            class="editor-placeholder__textarea"
-            id="code-input"
-            spellcheck="false"
-            aria-label="Área de código (editor completo chega no Sprint 2)"
-          >#include &lt;iostream&gt;
-using namespace std;
-
-int main() {
-    int idade = 18;
-    if (idade &gt;= 18) {
-        cout &lt;&lt; "Maior de idade" &lt;&lt; endl;
-    } else {
-        cout &lt;&lt; "Menor de idade" &lt;&lt; endl;
-    }
-    return 0;
-}</textarea>
-        </div>
+        <!-- Monaco Editor monta aqui (Sprint 2). -->
+        <div class="monaco-container" id="monaco-container"></div>
         <div class="editor-pane__toolbar">
           <button class="btn btn--primary" type="button" id="btn-run">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 4l14 8-14 8V4Z" fill="currentColor"/></svg>
             Executar
           </button>
           <button class="btn btn--ghost" type="button" id="btn-explain">Explicar código</button>
+
+          <span class="editor-toolbar__divider" aria-hidden="true"></span>
+
+          <button class="icon-btn icon-btn--tiny" type="button" id="btn-zoom-out" aria-label="Diminuir fonte do editor" title="Diminuir fonte (Ctrl -)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <span class="editor-toolbar__zoom-label" id="zoom-label">14px</span>
+          <button class="icon-btn icon-btn--tiny" type="button" id="btn-zoom-in" aria-label="Aumentar fonte do editor" title="Aumentar fonte (Ctrl +)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <button class="icon-btn icon-btn--tiny is-active" type="button" id="btn-toggle-minimap" aria-label="Alternar minimapa" aria-pressed="true" title="Alternar minimapa">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M15 4v16" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+
           <span class="editor-pane__note">Compilação real (C/C++) chega no Sprint 3</span>
         </div>
       </section>
@@ -216,7 +189,7 @@ int main() {
         <button class="icon-btn icon-btn--tiny" id="btn-close-help" aria-label="Fechar painel de ajuda">×</button>
       </div>
       <div class="helppanel__body">
-        <p class="helppanel__hint">Clique em uma palavra-chave no editor para ver definição, uso e boas práticas aqui. <em>(Sprint 2)</em></p>
+        <p class="helppanel__hint">Clique em uma palavra-chave no editor (ex.: <em>int</em>, <em>if</em>, <em>cout</em>) para ver definição, uso e boas práticas aqui.</p>
       </div>
     </aside>
   </div>
@@ -238,7 +211,7 @@ int main() {
       <span class="statusbar__item" id="status-streak">🔥 0 dias</span>
       <span class="statusbar__item" id="status-xp">0 XP</span>
       <span class="statusbar__item" id="status-cursor">Ln 1, Col 1</span>
-      <span class="statusbar__item">C++</span>
+      <span class="statusbar__item" id="status-language">C++</span>
       <span class="statusbar__item">UTF-8</span>
     </div>
   </footer>

@@ -54,6 +54,25 @@
   width: 22px;
   height: 22px;
 }
+.icon-btn.is-active {
+  background: var(--bg-hover);
+  color: var(--accent-copper-bright);
+}
+
+/* ---- Divisor e label de zoom (toolbar do editor) ---- */
+.editor-toolbar__divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border-strong);
+  margin-inline: var(--space-1);
+}
+.editor-toolbar__zoom-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  min-width: 34px;
+  text-align: center;
+}
 
 /* ---- Marca (usada no topbar, e futuramente na splash screen do PWA) ---- */
 .brand-name {
@@ -202,18 +221,21 @@
   text-transform: uppercase;
   color: var(--text-secondary);
 }
-.sidebar__section-title .chevron {
-  transition: transform var(--dur-fast) var(--ease-standard);
-}
-.sidebar__section.is-open .chevron {
-  transform: rotate(90deg);
-}
 
 .filetree {
   padding: var(--space-1) 0 var(--space-3);
 }
 .filetree ul {
   padding-left: var(--space-4);
+}
+/* Bug do Sprint 1: a classe is-open só existia visualmente para o chevron
+   da seção raiz (que não existe mais). Pastas nunca escondiam os filhos
+   de verdade. Corrigido no Sprint 2: */
+.filetree__folder > ul {
+  display: none;
+}
+.filetree__folder.is-open > ul {
+  display: block;
 }
 .filetree__folder,
 .filetree__file {
@@ -226,6 +248,16 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: var(--font-mono);
+}
+.filetree__folder::before {
+  content: "▸";
+  display: inline-block;
+  font-size: 0.7em;
+  color: var(--text-muted);
+  transition: transform var(--dur-fast) var(--ease-standard);
+}
+.filetree__folder.is-open::before {
+  transform: rotate(90deg);
 }
 .filetree__folder:hover,
 .filetree__file:hover {

@@ -7,8 +7,8 @@ de uma vez só, inconsistente entre módulos).
 | # | Sprint | Status |
 |---|--------|--------|
 | 1 | Arquitetura e layout | ✅ Concluído |
-| 2 | Editor Monaco + interface completa estilo VS Code | ⬜ Próximo |
-| 3 | Terminal (xterm.js) + compilação real (C/C++ via API externa) | ⬜ |
+| 2 | Editor Monaco + interface completa estilo VS Code | ✅ Concluído |
+| 3 | Terminal (xterm.js) + compilação real (C/C++ via API externa) | ⬜ Próximo |
 | 4 | Sistema de aulas e exercícios | ⬜ |
 | 5 | Gamificação completa (XP, níveis, conquistas, ranking, dashboard) | ⬜ |
 | 6 | PWA e modo offline | ⬜ |
@@ -29,3 +29,7 @@ de uma vez só, inconsistente entre módulos).
   JDoodle ou similar) e montar o proxy que esconde a chave de API.
 - Sprint 6 precisa baixar os bundles do Monaco/xterm para servir local,
   já que CDN quebra o requisito de uso 100% offline em laboratório.
+  **Confirmado no Sprint 2:** o Monaco está sendo servido via
+  `cdn.jsdelivr.net` (versão fixada em `js/config.js`, `EDITOR_DEFAULTS.cdnVersion`) —
+  sem internet, o editor não carrega. Isso é aceitável agora, mas é
+  exatamente o problema que o Sprint 6 precisa resolver.

@@ -3,31 +3,36 @@
  * Ponto de entrada da aplicação. Não contém lógica de domínio própria —
  * apenas inicializa, na ordem correta, os módulos que compõem a IDE.
  *
- * Ordem importa: o tema é aplicado antes de qualquer pintura visível,
- * o storage/gamificação carrega o estado do aluno antes da UI depender
- * dele, e os módulos de interação (ui.js, explorer.js) entram por último.
+ * Sprint 2: o Monaco Editor carrega de forma assíncrona (via CDN), então
+ * o bootstrap agora é async e aguarda `initEditor()` antes de montar o
+ * workbench (explorer + abas), que depende do editor já existir.
  */
 
-import { initTheme } from "./theme.js";
+import { initTheme, getCurrentTheme } from "./theme.js";
 import { initGamification } from "./gamification.js";
-import { initExplorer } from "./explorer.js";
 import { initEditor } from "./editor.js";
 import { initTerminal } from "./terminal.js";
-import { initUI } from "./ui.js";
+import { initUI, initWorkbench } from "./ui.js";
 
-function bootstrap() {
+async function bootstrap() {
   initTheme();
   initGamification();
-  initExplorer();
-  initEditor();
+
+  await initEditor(getCurrentTheme());
+  initWorkbench();
+
   initTerminal();
   initUI();
 
   console.info(
-    "%cCodeLab EDU%c — Sprint 1: arquitetura e layout ✅",
+    "%cCodeLab EDU%c — Sprint 2: Monaco Editor + workbench ✅",
     "color:#e2965a;font-weight:700",
     "color:inherit"
   );
 }
 
-document.addEventListener("DOMContentLoaded", bootstrap);
+document.addEventListener("DOMContentLoaded", () => {
+  bootstrap().catch((err) => {
+    console.error("[app] Falha ao iniciar a plataforma:", err);
+  });
+});

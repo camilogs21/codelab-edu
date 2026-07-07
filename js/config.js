@@ -37,3 +37,17 @@ export const COMPILER_API = {
   baseUrl: "", // preenchido no Sprint 3
   timeoutMs: 10000,
 };
+
+/**
+ * Configuração do Monaco Editor (Sprint 2). `cdnVersion` precisa ficar em
+ * sincronia com a tag <script> do loader em index.html — se atualizar
+ * uma, atualize a outra.
+ */
+export const EDITOR_DEFAULTS = {
+  cdnVersion: "0.55.1",
+  defaultLanguage: "cpp",
+  fontSize: 14,
+  minFontSize: 10,
+  maxFontSize: 24,
+  minimapEnabled: true,
+};

@@ -3,9 +3,10 @@
    Estilos específicos da FEATURE de edição de código (não do componente
    .tab, que já mora em components.css, nem do contêiner .tabbar/.workbench,
    que mora em layout.css).
-   Sprint 1: o "editor-placeholder" simula visualmente o Monaco Editor
-   (gutter com números de linha + textarea monoespaçado) para validar o
-   layout antes da integração real, que acontece no Sprint 2.
+   Sprint 2: o Monaco Editor é montado dentro de #monaco-container via
+   JS (editor.js) — aqui só garantimos que o container ocupe o espaço
+   disponível; a aparência interna do editor é toda controlada pelos
+   temas 'codelab-dark'/'codelab-light' definidos em editor.js.
    ========================================================================== */
 
 .editor-pane {
@@ -16,52 +17,16 @@
   background: var(--bg-editor);
 }
 
-.editor-placeholder {
+.monaco-container {
   flex: 1;
   min-height: 0;
-  display: flex;
-  overflow: auto;
-}
-
-.editor-placeholder__gutter {
-  flex-shrink: 0;
-  width: 44px;
-  padding-top: var(--space-3);
-  text-align: right;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-  font-size: var(--fs-sm);
-  line-height: 1.7;
-  user-select: none;
-  border-right: 1px solid var(--border-subtle);
-}
-.editor-placeholder__gutter span {
-  display: block;
-  padding-right: var(--space-2);
-}
-
-.editor-placeholder__textarea {
-  flex: 1;
-  resize: none;
-  border: none;
-  background: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: var(--fs-sm);
-  line-height: 1.7;
-  padding: var(--space-3) var(--space-4);
-  tab-size: 4;
-  white-space: pre;
-}
-.editor-placeholder__textarea:focus-visible {
-  outline: none;
 }
 
 .editor-pane__toolbar {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
   border-top: 1px solid var(--border-subtle);
   background: var(--bg-panel);

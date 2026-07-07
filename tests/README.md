@@ -7,6 +7,22 @@ usar (ex.: Vitest com jsdom, Playwright para E2E) fica para quando
 justificar o setup. Por ora, checklist manual a rodar antes de cada
 entrega de sprint:
 
+## Checklist do Sprint 2
+
+- [ ] Monaco Editor carrega (precisa de internet — é via CDN)
+- [ ] Syntax highlight de C++ aparece corretamente
+- [ ] Clicar em cada arquivo da árvore abre o conteúdo certo no editor
+- [ ] Abrir 2-3 arquivos gera abas reais; fechar uma aba funciona
+- [ ] Fechar a aba ativa troca para a aba anterior corretamente
+- [ ] Expandir/colapsar a pasta "projetos" esconde/mostra os arquivos de verdade
+- [ ] Editar código, trocar de aba, voltar — edição não foi perdida
+- [ ] Recarregar a página — a última edição de cada arquivo persiste
+- [ ] Alternar tema dark/light também muda o tema do Monaco
+- [ ] Zoom + / Zoom - mudam o tamanho da fonte e persistem ao recarregar
+- [ ] Alternar minimapa liga/desliga de verdade
+- [ ] Clicar em `int`, `if`, `cout` no código abre o dicionário certo no painel de ajuda
+- [ ] "Explicar código" com `int idade = "18";` ainda funciona (ai.js do Sprint 1 intacto)
+
 ## Checklist do Sprint 1
 
 - [ ] `python3 -m http.server` + abrir no navegador sem erros no console

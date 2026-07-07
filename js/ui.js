@@ -1,21 +1,144 @@
 /**
  * ui.js
  * Amarra interações de "chrome" da IDE que não pertencem a um módulo de
- * domínio específico: abrir/fechar o drawer de missões, alternar tema,
- * trocar de aba no tabbar, e o botão "Executar" (que hoje só chama o
- * compiler.js simulado — Sprint 3 troca a implementação por trás dele).
+ * domínio específico. Sprint 2 adiciona o "workbench": a orquestração
+ * entre explorer.js (quais arquivos existem) e editor.js (o que está
+ * aberto no Monaco agora), incluindo o tabbar dinâmico.
  */
 
 import { qs, qsa } from "./utils.js";
 import { toggleTheme } from "./theme.js";
 import { compileAndRun } from "./compiler.js";
 import { writeLine, writeError, clear as clearTerminal } from "./terminal.js";
-import { getValue } from "./editor.js";
+import {
+  getValue,
+  openFile,
+  closeFile,
+  setTheme as setEditorTheme,
+  zoomIn,
+  zoomOut,
+  toggleMinimap,
+  onKeywordClick,
+} from "./editor.js";
+import { initExplorer, getFileById, highlightFile } from "./explorer.js";
 import { analyzeCode } from "./ai.js";
 
-function initThemeToggle() {
-  qs("#btn-theme-toggle")?.addEventListener("click", toggleTheme);
+/* ---------------------------------------------------------------------
+ * Workbench: abas de arquivos abertos
+ * ------------------------------------------------------------------- */
+
+let openFileIds = [];
+let activeFileId = null;
+
+function renderTabs() {
+  const tabbar = qs("#tabbar");
+  if (!tabbar) return;
+
+  tabbar.replaceChildren(
+    ...openFileIds.map((fileId) => {
+      const file = getFileById(fileId);
+      const tab = document.createElement("div");
+      tab.className = `tab${fileId === activeFileId ? " is-active" : ""}`;
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-selected", String(fileId === activeFileId));
+      tab.dataset.fileId = fileId;
+      tab.innerHTML = `
+        <span class="tab__icon">📄</span> ${file ? file.name : fileId}
+        <button class="tab__close" aria-label="Fechar aba ${file ? file.name : ""}">×</button>
+      `;
+      return tab;
+    })
+  );
 }
+
+/** Abre um arquivo no workbench: adiciona aba se necessário, ativa,
+ *  sincroniza o editor e o destaque no explorer. */
+function openInWorkbench(file) {
+  if (!openFileIds.includes(file.id)) {
+    openFileIds.push(file.id);
+  }
+  activeFileId = file.id;
+  openFile(file);
+  highlightFile(file.id);
+  renderTabs();
+}
+
+function closeTab(fileId) {
+  openFileIds = openFileIds.filter((id) => id !== fileId);
+  closeFile(fileId);
+
+  if (activeFileId === fileId) {
+    const nextId = openFileIds[openFileIds.length - 1] || null;
+    activeFileId = nextId;
+    if (nextId) {
+      const nextFile = getFileById(nextId);
+      if (nextFile) {
+        openFile(nextFile);
+        highlightFile(nextId);
+      }
+    }
+  }
+  renderTabs();
+}
+
+function initTabbarInteractions() {
+  const tabbar = qs("#tabbar");
+  if (!tabbar) return;
+
+  tabbar.addEventListener("click", (event) => {
+    const closeBtn = event.target.closest(".tab__close");
+    const tab = event.target.closest(".tab");
+    if (!tab) return;
+
+    if (closeBtn) {
+      closeTab(tab.dataset.fileId);
+      return;
+    }
+    const file = getFileById(tab.dataset.fileId);
+    if (file) openInWorkbench(file);
+  });
+}
+
+/** Ponto de entrada do workbench — chamado depois que o Monaco já
+ *  terminou de inicializar (ver app.js). */
+export function initWorkbench() {
+  const defaultId = initExplorer(openInWorkbench);
+  initTabbarInteractions();
+
+  const defaultFile = getFileById(defaultId);
+  if (defaultFile) openInWorkbench(defaultFile);
+}
+
+/* ---------------------------------------------------------------------
+ * Tema (sincroniza o Monaco com o toggle dark/light do topbar)
+ * ------------------------------------------------------------------- */
+
+function initThemeToggle() {
+  qs("#btn-theme-toggle")?.addEventListener("click", () => {
+    const next = toggleTheme();
+    setEditorTheme(next);
+  });
+}
+
+/* ---------------------------------------------------------------------
+ * Zoom e minimapa do editor
+ * ------------------------------------------------------------------- */
+
+function initEditorToolbar() {
+  qs("#btn-zoom-in")?.addEventListener("click", zoomIn);
+  qs("#btn-zoom-out")?.addEventListener("click", zoomOut);
+
+  const minimapBtn = qs("#btn-toggle-minimap");
+  minimapBtn?.addEventListener("click", () => {
+    const enabled = toggleMinimap();
+    minimapBtn.classList.toggle("is-active", enabled);
+    minimapBtn.setAttribute("aria-pressed", String(enabled));
+  });
+}
+
+/* ---------------------------------------------------------------------
+ * Drawer de missões
+ * ------------------------------------------------------------------- */
 
 function initMissionsDrawer() {
   const drawer = qs("#missions-drawer");
@@ -41,6 +164,10 @@ function initMissionsDrawer() {
   });
 }
 
+/* ---------------------------------------------------------------------
+ * Painel de ajuda: "Explicar código" (ai.js) e dicionário (editor.js)
+ * ------------------------------------------------------------------- */
+
 function renderFindings(panel, findings) {
   const body = qs(".helppanel__body", panel);
   if (!body) return;
@@ -64,6 +191,20 @@ function renderFindings(panel, findings) {
   );
 }
 
+function renderDictionaryEntry(panel, entry) {
+  const body = qs(".helppanel__body", panel);
+  if (!body) return;
+
+  body.innerHTML = `
+    <div class="code-finding">
+      <div class="code-finding__line">${entry.label}</div>
+      <p class="code-finding__message">${entry.definition}</p>
+      <div class="code-finding__suggestion">${entry.example}</div>
+      <p class="helppanel__hint" style="margin-top:8px">${entry.practice}</p>
+    </div>
+  `;
+}
+
 function initHelpPanel() {
   const panel = qs("#helppanel");
   if (!panel) return;
@@ -75,19 +216,16 @@ function initHelpPanel() {
   qs("#btn-close-help")?.addEventListener("click", () => {
     panel.hidden = true;
   });
-}
 
-function initTabbar() {
-  const tabs = qsa(".tab");
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", (event) => {
-      // Fechar aba não deve também ativá-la.
-      if (event.target.closest(".tab__close")) return;
-      tabs.forEach((t) => t.classList.remove("is-active"));
-      tab.classList.add("is-active");
-    });
+  onKeywordClick((entry) => {
+    panel.hidden = false;
+    renderDictionaryEntry(panel, entry);
   });
 }
+
+/* ---------------------------------------------------------------------
+ * Executar (ainda simulado — compiler.js real chega no Sprint 3)
+ * ------------------------------------------------------------------- */
 
 function initRunButton() {
   const btn = qs("#btn-run");
@@ -105,11 +243,12 @@ function initRunButton() {
   });
 }
 
-/** Ponto único de inicialização de todo o "chrome" do shell. */
+/** Ponto único de inicialização do "chrome" do shell (tudo que não é o
+ *  workbench, iniciado à parte em initWorkbench após o Monaco carregar). */
 export function initUI() {
   initThemeToggle();
+  initEditorToolbar();
   initMissionsDrawer();
   initHelpPanel();
-  initTabbar();
   initRunButton();
 }

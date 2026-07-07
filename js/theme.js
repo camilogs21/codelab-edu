@@ -28,3 +28,9 @@ export function initTheme() {
   const saved = get(STORAGE_KEY, "dark");
   applyTheme(saved);
 }
+
+/** Tema atualmente aplicado. Usado por app.js para inicializar o Monaco
+ *  já com o tema certo, sem precisar de um segundo repaint. */
+export function getCurrentTheme() {
+  return document.body.getAttribute("data-theme") || "dark";
+}
