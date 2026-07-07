@@ -1,0 +1,50 @@
+/* ==========================================================================
+   TERMINAL.CSS
+   Estilos específicos da FEATURE de terminal (o contêiner .terminal-pane
+   já mora em layout.css). Sprint 1: markup estático estilizado como
+   terminal. O xterm.js real, com cores ANSI, scroll e atalhos, é integrado
+   no Sprint 3 junto com a compilação C/C++ via API externa.
+   ========================================================================== */
+
+.terminal-tabbar {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  flex-shrink: 0;
+  padding-inline: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.terminal-tab {
+  padding: 0 var(--space-3);
+  height: 100%;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.terminal-tab.is-active {
+  color: var(--text-primary);
+  box-shadow: inset 0 -2px 0 var(--accent-copper-bright);
+}
+.terminal-tabbar__spacer {
+  flex: 1;
+}
+
+.terminal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+.terminal-line {
+  margin: 0 0 4px;
+  color: var(--accent-success);
+}
+.terminal-line--muted {
+  color: var(--text-muted);
+}
+.cursor-blink {
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+}

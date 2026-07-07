@@ -1,0 +1,72 @@
+/* ==========================================================================
+   RESPONSIVE.CSS
+   Prioridade absoluta: Chromebooks de laboratório (telas ~1366×768 e
+   ~1280×800, sem touch). Notebook/desktop herdam o layout padrão acima
+   disso. Tablet é o breakpoint crítico de compressão de layout.
+   ========================================================================== */
+
+/* ---- Notebooks pequenos / Chromebooks 11"-13" (ainda no layout completo,
+   apenas reduzindo larguras fixas para caber mais conteúdo) ---- */
+@media (max-width: 1366px) {
+  :root {
+    --w-sidebar: 220px;
+  }
+  .helppanel {
+    width: 220px;
+  }
+  .topbar__search {
+    max-width: 260px;
+  }
+}
+
+/* ---- Tablet / janela estreita: esconde o help panel por padrão e
+   reduz a activity bar; sidebar vira overlay sob demanda ---- */
+@media (max-width: 1024px) {
+  .helppanel {
+    display: none;
+  }
+  .topbar__menu {
+    display: none;
+  }
+  :root {
+    --w-sidebar: 200px;
+    --h-terminal: 180px;
+  }
+}
+
+/* ---- Mobile / uso emergencial (a IDE não é otimizada para celular,
+   mas o shell não deve quebrar caso alguém abra por engano) ---- */
+@media (max-width: 720px) {
+  .sidebar {
+    position: fixed;
+    top: var(--h-topbar);
+    bottom: var(--h-statusbar);
+    left: var(--w-activitybar);
+    z-index: 30;
+    box-shadow: var(--shadow-soft);
+    display: none; /* aberto via ui.js quando o usuário toca no activity bar */
+  }
+  .sidebar.is-open {
+    display: flex;
+  }
+  .topbar__search {
+    display: none;
+  }
+  .statusbar__group--center {
+    display: none;
+  }
+}
+
+/* ---- Impressão: não faz sentido para uma IDE, mas evita fundo escuro
+   ocupando páginas inteiras caso alguém tente imprimir por engano ---- */
+@media print {
+  body::before {
+    content: "CodeLab EDU é uma plataforma interativa e não foi projetada para impressão.";
+    display: block;
+    padding: var(--space-5);
+    font-family: var(--font-sans);
+  }
+  .app-shell {
+    display: none;
+  }
+}

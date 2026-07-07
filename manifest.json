@@ -1,0 +1,14 @@
+{
+  "$comment": "Stub do Sprint 1. Ícones reais, screenshots e o registro do service worker entram no Sprint 6 (PWA).",
+  "name": "CodeLab EDU",
+  "short_name": "CodeLab EDU",
+  "description": "IDE educacional para o Curso Técnico em Informática.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "lang": "pt-BR",
+  "icons": []
+}

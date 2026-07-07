@@ -1,0 +1,412 @@
+/* ==========================================================================
+   COMPONENTS.CSS
+   Widgets reutilizáveis — padrões visuais que podem aparecer em mais de
+   uma região do shell. Ver a regra de organização no topo de layout.css.
+   ========================================================================== */
+
+/* ---- Botões ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  transition: background var(--dur-fast) var(--ease-standard),
+              transform var(--dur-fast) var(--ease-standard);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn--primary {
+  background: var(--accent-copper);
+  color: var(--text-on-accent);
+}
+.btn--primary:hover {
+  background: var(--accent-copper-bright);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-strong);
+}
+.btn--ghost:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
+}
+.icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.icon-btn--tiny {
+  width: 22px;
+  height: 22px;
+}
+
+/* ---- Marca (usada no topbar, e futuramente na splash screen do PWA) ---- */
+.brand-name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+.brand-name strong {
+  color: var(--accent-copper-bright);
+  font-weight: 700;
+}
+
+/* ---- Itens de menu (topbar) ---- */
+.menu-item {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+}
+.menu-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ---- Campo de busca global ---- */
+.topbar__search {
+  flex: 1;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  height: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  margin-inline: auto;
+}
+.topbar__search input {
+  flex: 1;
+  background: none;
+  border: none;
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+}
+.topbar__search input::placeholder {
+  color: var(--text-muted);
+}
+.topbar__search input:focus-visible {
+  outline: none;
+}
+
+/* ---- Chip de XP/nível (topbar) ---- */
+.xp-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-2);
+  height: 26px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+.xp-chip__level {
+  color: var(--accent-copper-bright);
+  font-weight: 600;
+}
+.xp-chip__bar {
+  width: 60px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  overflow: hidden;
+}
+.xp-chip__fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-copper), var(--accent-copper-bright));
+  transition: width var(--dur-base) var(--ease-standard);
+}
+
+/* ---- Avatar do aluno ---- */
+.avatar-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-copper-dim);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Botão da activity bar (ícone + indicador de item ativo) ---- */
+.activitybar__btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  position: relative;
+}
+.activitybar__btn:hover {
+  color: var(--text-primary);
+}
+.activitybar__btn.is-active {
+  color: var(--accent-copper-bright);
+}
+.activitybar__btn.is-active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--accent-copper-bright);
+  border-radius: 2px;
+}
+
+/* ---- Item de status bar (usado em vários grupos) ---- */
+.statusbar__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* ---- Árvore de arquivos (Explorer) ---- */
+.sidebar__section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.sidebar__section-title .chevron {
+  transition: transform var(--dur-fast) var(--ease-standard);
+}
+.sidebar__section.is-open .chevron {
+  transform: rotate(90deg);
+}
+
+.filetree {
+  padding: var(--space-1) 0 var(--space-3);
+}
+.filetree ul {
+  padding-left: var(--space-4);
+}
+.filetree__folder,
+.filetree__file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 3px var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+.filetree__folder:hover,
+.filetree__file:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.filetree__file.is-active {
+  background: var(--bg-elevated);
+  color: var(--accent-copper-bright);
+  box-shadow: inset 2px 0 0 var(--accent-copper-bright);
+}
+.filetree__icon {
+  font-size: 0.9em;
+}
+
+/* ---- Abas de arquivos abertos (tabbar) ---- */
+.tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  border-right: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tab.is-active {
+  background: var(--bg-editor);
+  color: var(--text-primary);
+  box-shadow: inset 0 -2px 0 var(--accent-copper-bright);
+}
+.tab:hover {
+  color: var(--text-primary);
+}
+.tab__icon {
+  font-size: 0.85em;
+}
+.tab__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  color: inherit;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard);
+}
+.tab:hover .tab__close,
+.tab.is-active .tab__close {
+  opacity: 0.7;
+}
+.tab__close:hover {
+  opacity: 1 !important;
+  background: var(--bg-hover);
+}
+
+/* ---- Texto de dica no painel de ajuda ---- */
+.helppanel__hint {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.helppanel__hint em {
+  color: var(--accent-copper-bright);
+  font-style: normal;
+}
+
+/* ---- Resultado da análise de código (ai.js) dentro do painel de ajuda ---- */
+.code-finding {
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent-warning);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+}
+.code-finding__line {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+.code-finding__message {
+  font-size: var(--fs-sm);
+  margin: 4px 0;
+}
+.code-finding__suggestion {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--accent-success);
+}
+
+/* ---- Drawer genérico (usado hoje pelo painel de Missões) ---- */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 11, 0.55);
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-standard);
+}
+.drawer-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.missions-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 340px;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-soft);
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--dur-base) var(--ease-standard);
+}
+.missions-drawer.is-open {
+  transform: translateX(0);
+}
+.missions-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.missions-drawer__title {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.missions-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ---- Card (hoje usado pelas missões; reutilizável por conquistas/projetos) ---- */
+.mission-card {
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+}
+.mission-card__title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.mission-card__desc {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-2);
+}
+.mission-card__progress {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  overflow: hidden;
+}
+.mission-card__progress-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-copper), var(--accent-copper-bright));
+}
+.mission-card__reward {
+  margin-top: var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--accent-copper-bright);
+  font-family: var(--font-mono);
+}

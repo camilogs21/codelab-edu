@@ -1,0 +1,57 @@
+/* ==========================================================================
+   ANIMATIONS.CSS
+   Keyframes centralizados. Mantidos discretos por design (ver frontend
+   guidelines do projeto): a IDE deve parecer sóbria e profissional.
+   ========================================================================== */
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-fade-in {
+  animation: fade-in var(--dur-base) var(--ease-standard) both;
+}
+.animate-slide-up {
+  animation: slide-up-fade var(--dur-base) var(--ease-standard) both;
+}
+
+/* Toast de conquista / XP ganho (usado a partir do Sprint 5, hook já pronto) */
+.toast {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 60;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent-copper);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  animation: toast-in var(--dur-base) var(--ease-standard) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .cursor-blink {
+    animation: none;
+  }
+}

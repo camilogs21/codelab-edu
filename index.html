@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>CodeLab EDU — IDE Educacional</title>
+<meta name="description" content="Plataforma de ensino de programação para o Curso Técnico em Informática.">
+
+<!-- Fonts: JetBrains Mono para identidade de IDE, Inter para leitura de conteúdo -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Design tokens primeiro, depois os módulos de layout -->
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/editor.css">
+<link rel="stylesheet" href="css/terminal.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="manifest" href="manifest.json">
+</head>
+<body data-theme="dark">
+
+<!-- Skip link para acessibilidade via teclado -->
+<a class="skip-link" href="#editor-main">Pular para o editor</a>
+
+<div class="app-shell" id="app-shell">
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar" role="banner">
+    <div class="topbar__brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 4L2 12L8 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 4L22 12L16 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="brand-name">CodeLab <strong>EDU</strong></span>
+    </div>
+
+    <nav class="topbar__menu" aria-label="Menu principal">
+      <button class="menu-item" type="button" data-menu="arquivo">Arquivo</button>
+      <button class="menu-item" type="button" data-menu="editar">Editar</button>
+      <button class="menu-item" type="button" data-menu="exibir">Exibir</button>
+      <button class="menu-item" type="button" data-menu="executar">Executar</button>
+      <button class="menu-item" type="button" data-menu="ajuda">Ajuda</button>
+    </nav>
+
+    <div class="topbar__search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+        <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input type="search" placeholder="Buscar aulas, exercícios, comandos…" aria-label="Buscar na plataforma" id="global-search">
+    </div>
+
+    <div class="topbar__actions">
+      <button class="icon-btn" type="button" id="btn-missions" aria-label="Painel de missões" title="Missões">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L14.5 8.5L21 9L16 13.5L17.5 20L12 16.5L6.5 20L8 13.5L3 9L9.5 8.5L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="icon-btn" type="button" id="btn-theme-toggle" aria-label="Alternar tema claro/escuro" title="Alternar tema">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3V5M12 19V21M5 12H3M21 12H19M18.4 18.4L17 17M18.4 5.6L17 7M5.6 18.4L7 17M5.6 5.6L7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+      </button>
+      <div class="xp-chip" id="xp-chip" title="Seu progresso">
+        <span class="xp-chip__level" id="xp-level">Nv. 1</span>
+        <span class="xp-chip__bar"><span class="xp-chip__fill" id="xp-fill" style="width:0%"></span></span>
+      </div>
+      <button class="avatar-btn" type="button" id="btn-profile" aria-label="Perfil do aluno">CG</button>
+    </div>
+  </header>
+
+  <!-- ============ CORPO PRINCIPAL ============ -->
+  <div class="app-body">
+
+    <!-- ACTIVITY BAR -->
+    <nav class="activitybar" aria-label="Navegação de painéis">
+      <button class="activitybar__btn is-active" type="button" data-panel="explorer" aria-label="Explorador de arquivos" title="Explorer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <button class="activitybar__btn" type="button" data-panel="lessons" aria-label="Trilha de aulas" title="Aulas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19V5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" stroke="currentColor" stroke-width="1.6"/><path d="M8 8h7M8 12h7M8 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button class="activitybar__btn" type="button" data-panel="dashboard" aria-label="Painel de progresso" title="Dashboard">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h6v8H4V4Zm10 12h6v4h-6v-4ZM4 16h6v4H4v-4ZM14 4h6v6h-6V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="activitybar__btn" type="button" data-panel="projects" aria-label="Projetos" title="Projetos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <button class="activitybar__btn" type="button" data-panel="achievements" aria-label="Conquistas" title="Conquistas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M9 13.5L7.5 21L12 18.5L16.5 21L15 13.5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="activitybar__spacer"></div>
+      <button class="activitybar__btn" type="button" data-panel="teacher" aria-label="Modo professor" title="Modo Professor">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 2 8l10 5 10-5-10-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 11v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <button class="activitybar__btn" type="button" data-panel="settings" aria-label="Configurações" title="Configurações">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4.9a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.5a7 7 0 0 0-2 1.2l-2.4-.9-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-.9a7 7 0 0 0 2 1.2L10 21h4l.5-2.5a7 7 0 0 0 2-1.2l2.4.9 2-3.4-2-1.6c.07-.4.1-.8.1-1.2Z" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+    </nav>
+
+    <!-- SIDEBAR (Explorer por padrão) -->
+    <aside class="sidebar" id="sidebar" aria-label="Explorador de arquivos">
+      <div class="sidebar__header">
+        <span>Explorer</span>
+        <div class="sidebar__header-actions">
+          <button class="icon-btn icon-btn--tiny" type="button" aria-label="Novo arquivo" title="Novo arquivo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar__section is-open">
+        <button class="sidebar__section-title" type="button" aria-expanded="true">
+          <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"/></svg>
+          CODELAB-EDU
+        </button>
+        <ul class="filetree" id="explorer-tree" role="tree">
+          <li role="treeitem" class="filetree__folder is-open">
+            <span class="filetree__icon">📁</span> aulas
+            <ul>
+              <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> 01-introducao.cpp</li>
+              <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> 02-variaveis.cpp</li>
+              <li role="treeitem" class="filetree__file is-active"><span class="filetree__icon">📄</span> 03-condicionais.cpp</li>
+            </ul>
+          </li>
+          <li role="treeitem" class="filetree__folder">
+            <span class="filetree__icon">📁</span> projetos
+            <ul>
+              <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> calculadora.cpp</li>
+              <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> jogo-da-forca.cpp</li>
+            </ul>
+          </li>
+          <li role="treeitem" class="filetree__file"><span class="filetree__icon">📄</span> main.cpp</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- ÁREA CENTRAL: EDITOR + TERMINAL -->
+    <main class="workbench" id="editor-main">
+
+      <div class="tabbar" role="tablist" aria-label="Arquivos abertos">
+        <div class="tab is-active" role="tab" aria-selected="true">
+          <span class="tab__icon">📄</span> 03-condicionais.cpp
+          <button class="tab__close" aria-label="Fechar aba">×</button>
+        </div>
+        <div class="tab" role="tab" aria-selected="false">
+          <span class="tab__icon">📄</span> main.cpp
+          <button class="tab__close" aria-label="Fechar aba">×</button>
+        </div>
+      </div>
+
+      <section class="editor-pane" aria-label="Editor de código">
+        <!-- Placeholder do Sprint 1. Monaco Editor substitui este bloco no Sprint 2. -->
+        <div class="editor-placeholder" id="editor-placeholder">
+          <div class="editor-placeholder__gutter" id="editor-gutter"></div>
+          <textarea
+            class="editor-placeholder__textarea"
+            id="code-input"
+            spellcheck="false"
+            aria-label="Área de código (editor completo chega no Sprint 2)"
+          >#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int idade = 18;
+    if (idade &gt;= 18) {
+        cout &lt;&lt; "Maior de idade" &lt;&lt; endl;
+    } else {
+        cout &lt;&lt; "Menor de idade" &lt;&lt; endl;
+    }
+    return 0;
+}</textarea>
+        </div>
+        <div class="editor-pane__toolbar">
+          <button class="btn btn--primary" type="button" id="btn-run">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 4l14 8-14 8V4Z" fill="currentColor"/></svg>
+            Executar
+          </button>
+          <button class="btn btn--ghost" type="button" id="btn-explain">Explicar código</button>
+          <span class="editor-pane__note">Compilação real (C/C++) chega no Sprint 3</span>
+        </div>
+      </section>
+
+      <section class="terminal-pane" aria-label="Terminal">
+        <div class="terminal-tabbar">
+          <button class="terminal-tab is-active" type="button">Terminal</button>
+          <button class="terminal-tab" type="button">Saída</button>
+          <button class="terminal-tab" type="button">Problemas</button>
+          <div class="terminal-tabbar__spacer"></div>
+          <button class="icon-btn icon-btn--tiny" type="button" id="btn-clear-terminal" aria-label="Limpar terminal" title="Limpar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <!-- Placeholder do Sprint 1. xterm.js entra no Sprint 3. -->
+        <div class="terminal-body" id="terminal-body" role="log" aria-live="polite">
+          <p class="terminal-line terminal-line--muted">CodeLab EDU — terminal em modo de demonstração.</p>
+          <p class="terminal-line terminal-line--muted">O motor de compilação C/C++ será conectado no Sprint 3.</p>
+          <p class="terminal-line">$ <span class="cursor-blink">▍</span></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- PAINEL LATERAL DE AJUDA / DICIONÁRIO -->
+    <aside class="helppanel" id="helppanel" aria-label="Painel de ajuda e dicionário" hidden>
+      <div class="helppanel__header">
+        <span>Dicionário</span>
+        <button class="icon-btn icon-btn--tiny" id="btn-close-help" aria-label="Fechar painel de ajuda">×</button>
+      </div>
+      <div class="helppanel__body">
+        <p class="helppanel__hint">Clique em uma palavra-chave no editor para ver definição, uso e boas práticas aqui. <em>(Sprint 2)</em></p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ============ STATUS BAR ============ -->
+  <footer class="statusbar" role="contentinfo">
+    <div class="statusbar__group">
+      <span class="statusbar__item">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 3v18M6 8h9a3 3 0 0 0 0-6H6M6 15h9a3 3 0 0 1 0 6H6" stroke="currentColor" stroke-width="1.6"/></svg>
+        turma-201
+      </span>
+      <span class="statusbar__item" id="status-errors">0 erros</span>
+      <span class="statusbar__item" id="status-warnings">0 avisos</span>
+    </div>
+    <div class="statusbar__group statusbar__group--center">
+      <span class="statusbar__item" id="status-mission">Missão: Estruturas condicionais em C++</span>
+    </div>
+    <div class="statusbar__group">
+      <span class="statusbar__item" id="status-streak">🔥 0 dias</span>
+      <span class="statusbar__item" id="status-xp">0 XP</span>
+      <span class="statusbar__item" id="status-cursor">Ln 1, Col 1</span>
+      <span class="statusbar__item">C++</span>
+      <span class="statusbar__item">UTF-8</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ============ DRAWER DE MISSÕES / XP ============ -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="missions-drawer" id="missions-drawer" aria-label="Missões e progresso" aria-hidden="true">
+  <div class="missions-drawer__header">
+    <span class="missions-drawer__title">Missões</span>
+    <button class="icon-btn icon-btn--tiny" id="btn-close-missions" aria-label="Fechar painel de missões">×</button>
+  </div>
+  <div class="missions-drawer__body" id="missions-drawer-body">
+    <!-- Preenchido dinamicamente por gamification.js -->
+  </div>
+</aside>
+
+<!-- ============ MÓDULOS JS (ES Modules) ============ -->
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

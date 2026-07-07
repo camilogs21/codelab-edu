@@ -1,0 +1,178 @@
+/* ==========================================================================
+   LAYOUT.CSS
+   Posicionamento e dimensão das REGIÕES do shell — "onde cada coisa mora".
+   A aparência de widgets reutilizáveis (botões, chips, abas, cards, árvore
+   de arquivos) fica em components.css. Regra prática ao editar: se a classe
+   descreve uma região única da tela (topbar, sidebar, statusbar...), é
+   layout.css; se descreve um padrão repetível (um botão, uma aba, um
+   card...), é components.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   APP SHELL — grade principal em três faixas verticais:
+   topbar / app-body (flex, ocupa o resto) / statusbar
+   ========================================================================== */
+.app-shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: var(--h-topbar) 1fr var(--h-statusbar);
+}
+
+.app-body {
+  display: flex;
+  min-height: 0; /* essencial para permitir scroll interno dos filhos */
+}
+
+.workbench {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   TOPBAR
+   ========================================================================== */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: 0 var(--space-4);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--accent-copper-bright);
+  flex-shrink: 0;
+}
+.topbar__menu {
+  display: flex;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   ACTIVITY BAR
+   ========================================================================== */
+.activitybar {
+  width: var(--w-activitybar);
+  flex-shrink: 0;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: var(--space-3);
+  gap: var(--space-1);
+}
+.activitybar__spacer {
+  flex: 1;
+}
+
+/* ==========================================================================
+   SIDEBAR (Explorer)
+   ========================================================================== */
+.sidebar {
+  width: var(--w-sidebar);
+  flex-shrink: 0;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   TABBAR (contêiner das abas de arquivos abertos)
+   ========================================================================== */
+.tabbar {
+  height: var(--h-tabbar);
+  flex-shrink: 0;
+  display: flex;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+/* ==========================================================================
+   TERMINAL PANE (contêiner; o conteúdo interno vive em terminal.css)
+   ========================================================================== */
+.terminal-pane {
+  height: var(--h-terminal);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-deep);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ==========================================================================
+   HELP PANEL (dicionário contextual)
+   ========================================================================== */
+.helppanel {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+}
+.helppanel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.helppanel__body {
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   STATUS BAR
+   ========================================================================== */
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--space-3);
+  background: var(--accent-copper-dim);
+  color: var(--text-on-accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+.statusbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.statusbar__group--center {
+  color: var(--text-on-accent);
+  opacity: 0.9;
+}

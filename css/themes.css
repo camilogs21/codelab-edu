@@ -1,0 +1,112 @@
+/* ==========================================================================
+   THEMES.CSS
+   Design tokens do CodeLab EDU.
+   Paleta: navy profundo + cobre — mesma identidade visual usada nos demais
+   materiais didáticos (estética "circuito impresso"), agora aplicada a uma
+   IDE educacional profissional.
+   Este arquivo NUNCA deve conter regras de layout, apenas variáveis.
+   ========================================================================== */
+
+:root {
+  /* ---- Cor: superfícies ---- */
+  --bg-deep: #0b0e14;        /* fundo geral da aplicação */
+  --bg-panel: #10141d;       /* sidebar, activity bar, terminal */
+  --bg-elevated: #171c26;    /* cards, tabs ativas, dropdowns */
+  --bg-editor: #0d1017;      /* fundo do editor de código */
+  --bg-hover: #1b2230;       /* hover genérico sobre superfícies escuras */
+
+  /* ---- Cor: bordas e divisores ---- */
+  --border-subtle: #1f2733;
+  --border-strong: #2b3546;
+
+  /* ---- Cor: texto ---- */
+  --text-primary: #e6edf3;
+  --text-secondary: #a7b1c2;
+  --text-muted: #6b7688;
+  --text-on-accent: #14100b;
+
+  /* ---- Cor: marca (cobre) ---- */
+  --accent-copper: #c9793f;
+  --accent-copper-bright: #e2965a;
+  --accent-copper-dim: #8a5730;
+
+  /* ---- Cor: semânticas ---- */
+  --accent-success: #3fb950;
+  --accent-danger: #f85149;
+  --accent-warning: #d29922;
+  --accent-info: #4f8cff;
+
+  /* ---- Cor: sintaxe (uso futuro no Monaco / highlight leve do placeholder) ---- */
+  --syntax-keyword: #e2965a;
+  --syntax-string: #7ee787;
+  --syntax-comment: #6b7688;
+  --syntax-function: #79c0ff;
+  --syntax-number: #d2a8ff;
+
+  /* ---- Tipografia ---- */
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --fs-xs: 0.6875rem;   /* 11px */
+  --fs-sm: 0.8125rem;   /* 13px */
+  --fs-md: 0.9375rem;   /* 15px */
+  --fs-lg: 1.125rem;    /* 18px */
+  --fs-xl: 1.5rem;      /* 24px */
+
+  /* ---- Espaçamento ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* ---- Raio e sombra ---- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-panel: 0 0 0 1px var(--border-subtle);
+
+  /* ---- Dimensões de layout fixas ---- */
+  --h-topbar: 44px;
+  --h-statusbar: 26px;
+  --w-activitybar: 48px;
+  --w-sidebar: 260px;
+  --h-tabbar: 36px;
+  --h-terminal: 220px;
+
+  /* ---- Transições ---- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+}
+
+/* ---- Tema claro (opcional, alternável via botão no topbar) ---- */
+[data-theme="light"] {
+  --bg-deep: #f4f6f9;
+  --bg-panel: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-editor: #ffffff;
+  --bg-hover: #eef1f6;
+
+  --border-subtle: #dde3ec;
+  --border-strong: #c7d0dd;
+
+  --text-primary: #10141d;
+  --text-secondary: #4a5568;
+  --text-muted: #8a94a6;
+  --text-on-accent: #ffffff;
+
+  --syntax-comment: #8a94a6;
+
+  --shadow-soft: 0 4px 16px rgba(16, 20, 29, 0.08);
+}
+
+/* Respeita preferência de movimento reduzido do usuário */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+  }
+}

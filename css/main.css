@@ -1,0 +1,64 @@
+/* ==========================================================================
+   MAIN.CSS
+   Reset e base tipográfica/global do CodeLab EDU. Nada de layout de
+   regiões (isso é layout.css) nem de componentes reutilizáveis (isso é
+   components.css) — este arquivo é intencionalmente pequeno.
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  overflow: hidden; /* a IDE controla o scroll internamente, painel a painel */
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- Acessibilidade: link para pular direto ao editor ---- */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 1000;
+  background: var(--accent-copper);
+  color: var(--text-on-accent);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+}
+.skip-link:focus {
+  left: var(--space-3);
+  top: var(--space-3);
+}
+
+/* Foco visível consistente em toda a plataforma (WCAG) */
+:focus-visible {
+  outline: 2px solid var(--accent-copper-bright);
+  outline-offset: 2px;
+}
