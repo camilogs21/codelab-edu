@@ -1,48 +1,79 @@
-# API de Compilação (planejado para o Sprint 3)
+# API de Compilação — Judge0 CE (implementado no Sprint 3)
 
-Este documento existe para não perder as decisões já tomadas quando o
-Sprint 3 começar de fato.
+## Decisão final
 
-## Decisão
+**Judge0 CE via RapidAPI**, `language_id 54` (C++ GCC 9.2.0) e `50` (C GCC
+9.2.0). Endpoint: `https://judge0-ce.p.rapidapi.com/submissions`.
 
-C/C++ não roda no navegador — a compilação/execução acontece num serviço
-externo (candidatos: Judge0 self-hosted ou via RapidAPI, ou JDoodle).
-A escolha final e o custo por execução ficam para o começo do Sprint 3.
+## Trade-off de segurança assumido conscientemente
 
-## Por que um proxy é obrigatório
+O ideal — descrito na primeira versão deste documento — era nunca expor a
+chave de API no front-end, usando um proxy serverless próprio. Esse proxy
+**ainda não existe** (não há backend hospedado neste projeto ainda), então
+o Sprint 3 tomou uma decisão pragmática:
 
-A chave de API do provedor escolhido **nunca** pode aparecer no código
-front-end (qualquer aluno consegue abrir o DevTools e lê-la). Por isso,
-`compiler.js` não vai chamar o provedor diretamente — vai chamar um
-endpoint próprio (função serverless), que guarda a chave no servidor e
-repassa a requisição.
+- A chave de API é fornecida pelo **próprio professor**, colada no painel
+  de Configurações (ícone de engrenagem na activity bar).
+- Ela fica salva **só no `localStorage` do navegador dele**, nunca é
+  commitada no repositório, nunca aparece hardcoded em nenhum arquivo.
+- Isso é seguro o suficiente para **um professor testando/demonstrando a
+  plataforma sozinho**, mas **não é adequado** para distribuir a mesma
+  chave entre várias turmas/Chromebooks — qualquer aluno com acesso ao
+  DevTools do navegador consegue ler a chave salva ali.
 
-## Contrato de `compileAndRun` (já implementado como stub)
+**Antes de destravar isso para uso real com turmas**, construir o proxy
+serverless (escondendo a chave no servidor) precisa virar prioridade. Até
+lá, o uso pretendido é: o professor usa sua própria chave gratuita,
+sabendo da limitação.
+
+## Contrato de `compileAndRun` (estável desde o Sprint 1)
 
 ```js
-compileAndRun(code: string, stdin?: string) => Promise<{
+compileAndRun(code: string, stdin?: string, language?: "c"|"cpp") => Promise<{
   stdout: string,
   stderr: string,
-  exitCode: number,
+  compileOutput: string,
+  exitCode: number,       // 0 = sucesso (Judge0 status.id === 3, "Accepted")
+  statusDescription?: string,
 }>
 ```
 
-Este contrato não muda quando a implementação real entrar — apenas o
-que acontece "por dentro" da função.
+Este contrato não mudou desde o stub do Sprint 1 — só a implementação por
+dentro, que agora faz uma chamada HTTP real.
 
-## Fluxo planejado (Sprint 3)
+## Fluxo implementado
 
-1. Aluno clica em "Executar".
-2. `compiler.js` envia `{ language: "cpp", code, stdin }` para o proxy próprio.
-3. Proxy chama o provedor externo com a chave guardada no servidor.
-4. Proxy devolve `{ stdout, stderr, exitCode }` no formato acima.
-5. `terminal.js` imprime o resultado.
+1. Aluno/professor clica em "Executar".
+2. `ui.js` lê o código do Monaco (`editor.js`) e chama `compiler.js`.
+3. `compiler.js` lê a chave salva em `storage.js` (`state.settings.judge0ApiKey`).
+   - Se não houver chave: retorna erro amigável pedindo para configurar,
+     sem fazer nenhuma chamada de rede.
+4. Envia `source_code`/`stdin` codificados em base64 para o Judge0
+   (`base64_encoded=true&wait=true`), com headers `X-RapidAPI-Key` e
+   `X-RapidAPI-Host`.
+5. Judge0 compila e executa em sandbox, devolve `stdout`/`stderr`/
+   `compile_output` (também em base64) e um `status` com `id`/`description`.
+6. `compiler.js` decodifica tudo e devolve no formato do contrato acima.
+7. `terminal.js` (xterm.js) imprime o resultado com cores ANSI (verde =
+   sucesso, vermelho = erro).
 
-## Riscos conhecidos
+## Tratamento de erros já implementado
 
-- **Sem internet no laboratório = sem execução de código.** Isso deve
-  ficar visível na UI (estado de erro claro, não uma falha silenciosa).
-- **Custo por execução**, se o provedor escolhido cobrar por chamada —
-  relevante para estimar uso com várias turmas simultâneas.
-- **Timeout**: já configurado em `config.js` (`COMPILER_API.timeoutMs`),
-  para não deixar o aluno esperando indefinidamente em caso de falha do provedor.
+| Situação | Comportamento |
+|---|---|
+| Sem chave configurada | Mensagem pedindo para configurar, sem chamar a API |
+| Chave inválida/expirada (HTTP 401/403) | Mensagem específica sugerindo checar a chave |
+| Limite de requisições atingido (HTTP 429) | Mensagem avisando para tentar mais tarde |
+| Timeout (`JUDGE0.timeoutMs`, 15s) | Mensagem de timeout, sugerindo checar internet |
+| Sem internet / serviço fora do ar | Mensagem genérica de falha de conexão |
+
+## Riscos que continuam de pé
+
+- **Sem internet no laboratório = sem execução de código**, mesmo com o
+  PWA (Sprint 6) instalado — a compilação em si nunca é cacheável.
+- **Limite do plano gratuito do Judge0/RapidAPI** pode ser atingido
+  rápido com uma turma inteira testando ao mesmo tempo. Vale monitorar o
+  uso e considerar um plano pago ou self-host se isso acontecer com
+  frequência.
+- **Chave de API única por professor**: se dois professores usarem a
+  mesma chave em turmas diferentes, o limite é compartilhado entre eles.

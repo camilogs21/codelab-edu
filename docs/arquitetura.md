@@ -45,8 +45,8 @@ implementação por dentro sem exigir mudanças em quem consome.
 |---|---|
 | `editor.js` | `initEditor(theme)`, `getValue()`, `setValue(code)`, `onChange(fn)`, `focus()`, `openFile(file)`, `closeFile(id)`, `setTheme(theme)`, `zoomIn()/zoomOut()`, `toggleMinimap()`, `onKeywordClick(fn)` |
 | `explorer.js` | `initExplorer(onOpenFile)`, `getFileById(id)`, `getAllFiles()`, `highlightFile(id)` |
-| `terminal.js` | `writeLine(text)`, `writeError(text)`, `clear()` |
-| `compiler.js` | `compileAndRun(code, stdin) → {stdout, stderr, exitCode}` |
+| `terminal.js` | `initTerminal()`, `writeLine(text)`, `writeError(text)`, `writeSuccess(text)`, `clear()`, `refit()` |
+| `compiler.js` | `compileAndRun(code, stdin, language) → {stdout, stderr, compileOutput, exitCode, statusDescription}` |
 | `storage.js` | `get/set/remove`, `loadState()/saveState(state)` |
 | `theme.js` | `initTheme()`, `toggleTheme()`, `applyTheme(theme)`, `getCurrentTheme()` |
 | `gamification.js` | `initGamification()`, `grantXp(amount)` |
@@ -54,7 +54,7 @@ implementação por dentro sem exigir mudanças em quem consome.
 | `lessons.js` | `getCurrentLesson()` (cresce no Sprint 4) |
 | `projects.js` | `getAvailableProjects()` (cresce no sprint de Projetos) |
 | `achievements.js` | `getUnlockedAchievements()`, `checkAchievement(event, payload)` |
-| `config.js` | Constantes: `STORAGE_NAMESPACE`, `XP_PER_LEVEL`, `LANGUAGES`, `COMPILER_API`, `EDITOR_DEFAULTS` |
+| `config.js` | Constantes: `STORAGE_NAMESPACE`, `XP_PER_LEVEL`, `LANGUAGES`, `JUDGE0`, `EDITOR_DEFAULTS`, `TERMINAL_DEFAULTS` |
 
 `getValue()/onChange()/focus()` mantiveram exatamente a assinatura do
 Sprint 1 mesmo trocando textarea por Monaco por baixo — é o contrato

@@ -50,6 +50,11 @@ export const DEFAULT_STATE = {
   lastCode: "",
   settings: {
     fontSize: EDITOR_DEFAULTS.fontSize,
+    // Chave pessoal do professor para a API Judge0 (RapidAPI). Nunca vem
+    // hardcoded no código-fonte — só existe depois que o próprio
+    // professor a digita no painel de Configurações. Ver aviso de
+    // segurança completo em config.js (JUDGE0) e docs/api.md.
+    judge0ApiKey: "",
   },
 };
 

@@ -9,7 +9,8 @@
 import { qs, qsa } from "./utils.js";
 import { toggleTheme } from "./theme.js";
 import { compileAndRun } from "./compiler.js";
-import { writeLine, writeError, clear as clearTerminal } from "./terminal.js";
+import { writeLine, writeError, writeSuccess, clear as clearTerminal, refit as refitTerminal } from "./terminal.js";
+import { get, set } from "./storage.js";
 import {
   getValue,
   openFile,
@@ -137,14 +138,11 @@ function initEditorToolbar() {
 }
 
 /* ---------------------------------------------------------------------
- * Drawer de missões
+ * Drawers (Missões e Configurações compartilham o mesmo overlay)
  * ------------------------------------------------------------------- */
 
-function initMissionsDrawer() {
-  const drawer = qs("#missions-drawer");
-  const overlay = qs("#drawer-overlay");
-  if (!drawer || !overlay) return;
-
+/** Cria os controles abrir/fechar de um drawer sobre o overlay compartilhado. */
+function createDrawerController(drawer, overlay) {
   const open = () => {
     drawer.classList.add("is-open");
     overlay.classList.add("is-open");
@@ -155,12 +153,60 @@ function initMissionsDrawer() {
     overlay.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
   };
+  return { open, close };
+}
 
+function initMissionsDrawer() {
+  const drawer = qs("#missions-drawer");
+  const overlay = qs("#drawer-overlay");
+  if (!drawer || !overlay) return null;
+
+  const { open, close } = createDrawerController(drawer, overlay);
   qs("#btn-missions")?.addEventListener("click", open);
   qs("#btn-close-missions")?.addEventListener("click", close);
-  overlay.addEventListener("click", close);
+  return close;
+}
+
+function initSettingsDrawer() {
+  const drawer = qs("#settings-drawer");
+  const overlay = qs("#drawer-overlay");
+  const input = qs("#input-judge0-key");
+  if (!drawer || !overlay || !input) return null;
+
+  const { open, close } = createDrawerController(drawer, overlay);
+
+  qs("#btn-settings")?.addEventListener("click", () => {
+    const state = get("state", {});
+    input.value = state?.settings?.judge0ApiKey || "";
+    open();
+  });
+  qs("#btn-close-settings")?.addEventListener("click", close);
+
+  qs("#btn-save-settings")?.addEventListener("click", () => {
+    const state = get("state", {});
+    set("state", { ...state, settings: { ...(state.settings || {}), judge0ApiKey: input.value.trim() } });
+    const status = qs("#settings-save-status");
+    if (status) {
+      status.hidden = false;
+      setTimeout(() => {
+        status.hidden = true;
+      }, 2000);
+    }
+  });
+
+  return close;
+}
+
+/** Liga o overlay compartilhado: clicar fora ou apertar Esc fecha
+ *  qualquer drawer que esteja aberto no momento. */
+function initSharedOverlay(closers) {
+  const overlay = qs("#drawer-overlay");
+  if (!overlay) return;
+
+  const closeAll = () => closers.forEach((close) => close?.());
+  overlay.addEventListener("click", closeAll);
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") closeAll();
   });
 }
 
@@ -212,19 +258,22 @@ function initHelpPanel() {
   qs("#btn-explain")?.addEventListener("click", () => {
     panel.hidden = false;
     renderFindings(panel, analyzeCode(getValue()));
+    refitTerminal();
   });
   qs("#btn-close-help")?.addEventListener("click", () => {
     panel.hidden = true;
+    refitTerminal();
   });
 
   onKeywordClick((entry) => {
     panel.hidden = false;
     renderDictionaryEntry(panel, entry);
+    refitTerminal();
   });
 }
 
 /* ---------------------------------------------------------------------
- * Executar (ainda simulado — compiler.js real chega no Sprint 3)
+ * Executar — Sprint 3: compilação real via Judge0 (compiler.js)
  * ------------------------------------------------------------------- */
 
 function initRunButton() {
@@ -235,10 +284,19 @@ function initRunButton() {
     btn.disabled = true;
     clearTerminal();
     writeLine("$ Compilando…");
-    const result = await compileAndRun(getValue());
+
+    const language = qs("#status-language")?.textContent === "C++" ? "cpp" : "cpp";
+    const result = await compileAndRun(getValue(), "", language);
+
+    if (result.compileOutput) writeError(result.compileOutput);
     if (result.stdout) writeLine(result.stdout);
     if (result.stderr) writeError(result.stderr);
-    writeLine(`$ processo finalizado com código ${result.exitCode}`);
+
+    if (result.exitCode === 0) {
+      writeSuccess(`$ processo finalizado com sucesso (${result.statusDescription || "OK"})`);
+    } else {
+      writeError(`$ processo finalizado com erro (código ${result.exitCode})`);
+    }
     btn.disabled = false;
   });
 }
@@ -248,7 +306,9 @@ function initRunButton() {
 export function initUI() {
   initThemeToggle();
   initEditorToolbar();
-  initMissionsDrawer();
+  const closeMissions = initMissionsDrawer();
+  const closeSettings = initSettingsDrawer();
+  initSharedOverlay([closeMissions, closeSettings]);
   initHelpPanel();
   initRunButton();
 }

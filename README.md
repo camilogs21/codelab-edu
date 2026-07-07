@@ -1,4 +1,4 @@
-# CodeLab EDU — Sprint 2: Monaco Editor + Workbench
+# CodeLab EDU — Sprint 3: Terminal Real + Compilação Judge0
 
 IDE educacional para o Curso Técnico em Informática, inspirada em VS Code / Replit / Cursor.
 HTML5 + CSS3 + JavaScript puro (ES Modules), sem frameworks.
@@ -16,56 +16,59 @@ python3 -m http.server 8080
 
 Ou use a extensão "Live Server" do VS Code, ou abra num GitHub Codespace.
 
-**Importante desde este sprint:** o Monaco Editor carrega via CDN
-(`cdn.jsdelivr.net`) — **é preciso ter internet** pra plataforma abrir
-corretamente. Isso é aceitável por enquanto; o Sprint 6 (PWA) resolve
-isso baixando os arquivos do Monaco pra servir localmente.
+**Importante:** Monaco e xterm.js carregam via CDN — **é preciso ter
+internet**. E, a partir deste sprint, **compilar/executar código também
+precisa de uma chave de API do Judge0** (grátis, ver seção abaixo).
+
+## Configurando a compilação real (Judge0)
+
+1. Crie uma conta gratuita em [rapidapi.com](https://rapidapi.com) e
+   assine o plano **Basic (grátis)** de
+   [Judge0 CE](https://rapidapi.com/judge0-official/api/judge0-ce).
+2. Copie sua chave de API (`X-RapidAPI-Key`).
+3. Na plataforma, clique no ícone de engrenagem (⚙) na barra lateral
+   esquerda, cole a chave no painel de Configurações e clique em Salvar.
+4. Pronto — o botão "Executar" já compila e roda C/C++ de verdade.
+
+⚠️ **Trade-off de segurança aceito neste sprint:** a chave fica salva só
+no `localStorage` do seu navegador — nunca é commitada no repositório.
+Isso é seguro para um professor testando sozinho, mas **não** para
+distribuir a mesma chave entre várias turmas (qualquer aluno com DevTools
+consegue ler). Detalhes completos e o plano para resolver isso (proxy
+serverless) estão em `docs/api.md`.
 
 ## O que este Sprint entrega
 
-- **Monaco Editor de verdade**, substituindo o textarea do Sprint 1:
-  syntax highlight de C++, autocomplete, bracket pair colorization,
-  números de linha, indentação automática, minimapa, zoom de fonte.
-- **Workbench real**: clicar num arquivo na árvore abre ele numa aba de
-  verdade; cada arquivo tem seu próprio modelo (undo/redo independente);
-  fechar aba funciona; a última edição de cada arquivo é salva sozinha.
-- **Dois temas do Monaco** (`codelab-dark`/`codelab-light`) usando a
-  mesma paleta cobre+navy do resto da plataforma, sincronizados com o
-  botão de tema do topbar.
-- **Dicionário contextual de verdade**: clicar numa palavra-chave
-  reconhecida (`int`, `if`, `cout`, `for`...) no código abre definição,
-  exemplo e boa prática no painel de ajuda.
-- Correção de um bug do Sprint 1: pastas fechadas na árvore agora
-  realmente escondem os arquivos dentro delas.
-- Tudo do Sprint 1 continua funcionando (tema, XP, missões, "Explicar
-  código", responsividade, acessibilidade).
+- **Terminal real com xterm.js**: cores ANSI (verde/vermelho), scroll,
+  redimensionamento automático, botão de limpar.
+- **Compilação/execução real de C/C++** via Judge0 CE (RapidAPI):
+  `compileAndRun` deixou de ser uma simulação e agora faz uma chamada
+  HTTP de verdade, decodifica a saída em base64 e trata erros comuns
+  (chave ausente/inválida, limite de requisições, timeout, sem internet).
+- **Painel de Configurações**: novo drawer para colar a chave de API,
+  reaproveitando o mesmo componente visual do drawer de Missões.
+- Tudo dos sprints anteriores continua funcionando (Monaco, workbench,
+  dicionário contextual, tema, XP, missões, responsividade, acessibilidade).
 
 ## O que é placeholder proposital (será substituído nos próximos sprints)
 
-| Módulo         | Hoje (Sprint 2)                          | Sprint que substitui |
+| Módulo         | Hoje (Sprint 3)                          | Sprint que substitui |
 |----------------|-------------------------------------------|-----------------------|
-| `terminal.js`  | `<div>` estilizado como terminal           | Sprint 3 — xterm.js |
-| `compiler.js`  | Simulação local (`setTimeout`), sem rede   | Sprint 3 — API externa (Judge0/JDoodle) de C/C++ |
 | `lessons.js`   | Uma aula fake, só o contrato de dados      | Sprint 4 — Sistema de Aulas completo |
 | `achievements.js` | Funções vazias, só o contrato           | Sprint 5 — Gamificação completa |
+| Chave de API no localStorage | Funciona, mas não escala para várias turmas | Quando um backend/proxy existir |
 
-A interface pública de cada módulo (`getValue/setValue`, `writeLine/clear`,
-`compileAndRun`, etc.) já é a definitiva — os sprints seguintes trocam a
-implementação por dentro, não o contrato. O `editor.js` deste sprint é a
-prova disso: trocou textarea por Monaco por baixo e `ui.js`/`compiler.js`/
-`ai.js` não precisaram mudar uma linha.
+A interface pública de cada módulo continua estável desde o Sprint 1 —
+os sprints seguintes trocam a implementação por dentro, não o contrato.
 
-## Decisão de arquitetura confirmada com o professor
+## Decisões de arquitetura confirmadas com o professor
 
-- **Linguagem prioritária do MVP:** C/C++, compilado via API externa.
-  Isso significa que a execução de código **depende de internet**, mesmo
-  depois que o PWA (Sprint 6) cachear o resto da plataforma para uso offline.
-  Vale alinhar com a escola se o laboratório tem conexão estável nos horários de aula.
-- **Chave de API:** nunca vai para o front-end. O Sprint 3 já nasce com um
-  proxy leve (função serverless) entre a IDE e a API de compilação.
-- **Monaco via CDN (Sprint 2):** versão fixada em `js/config.js`
-  (`EDITOR_DEFAULTS.cdnVersion`). Se atualizar, atualize também a tag
-  `<script>` do loader em `index.html`.
+- **Linguagem prioritária do MVP:** C/C++, compilado via Judge0 CE
+  (RapidAPI). Execução de código depende de internet.
+- **Monaco e xterm.js via CDN:** versões fixadas em `js/config.js`
+  (`EDITOR_DEFAULTS`/`TERMINAL_DEFAULTS`). Atualizar lá e nas tags
+  `<script>`/`<link>` de `index.html` juntas.
+- **Judge0 CE, `language_id` 54 (C++) e 50 (C)**, GCC 9.2.0.
 
 ## Paleta e identidade visual
 
