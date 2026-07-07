@@ -6,15 +6,22 @@ HTML5 + CSS3 + JavaScript puro (ES Modules), sem frameworks.
 ## Como rodar
 
 Como o JS usa `type="module"`, o navegador bloqueia `import` via `file://`.
-É preciso servir por HTTP local:
+É preciso servir por HTTP local — **e, a partir deste sprint, usar
+`server.py` em vez do `http.server` simples**, porque a compilação real
+via JDoodle precisa de um proxy same-origin (ver "Configurando a
+compilação real" abaixo):
 
 ```bash
 cd codelab-edu
-python3 -m http.server 8080
+python3 server.py
 # depois abra http://localhost:8080
 ```
 
-Ou use a extensão "Live Server" do VS Code, ou abra num GitHub Codespace.
+(`python3 server.py 3000` funciona também, se quiser outra porta.)
+
+Ou use a extensão "Live Server" do VS Code **só para navegar pela
+interface** — mas aí o botão "Executar" não vai funcionar, porque não
+existe o proxy. Pra testar compilação de verdade, sempre `server.py`.
 
 **Importante:** Monaco e xterm.js carregam via CDN — **é preciso ter
 internet**. E, a partir deste sprint, **compilar/executar código também
@@ -30,18 +37,30 @@ seção abaixo).
 3. Na plataforma, clique no ícone de engrenagem (⚙) na barra lateral
    esquerda, cole as duas credenciais no painel de Configurações e
    clique em Salvar.
-4. Pronto — o botão "Executar" já compila e roda C/C++ de verdade.
+4. Pronto — o botão "Executar" já compila e roda C/C++ de verdade
+   (desde que você tenha iniciado com `python3 server.py`, não `http.server`).
 
-⚠️ **Trade-off de segurança aceito neste sprint:** as credenciais ficam
-salvas só no `localStorage` do seu navegador — nunca são commitadas no
-repositório. Isso é seguro para um professor testando sozinho, mas
-**não** para distribuir as mesmas credenciais entre várias turmas
-(qualquer aluno com DevTools consegue ler, e o limite de 200/dia é
-compartilhado). Detalhes completos e o plano para resolver isso (proxy
-serverless) estão em `docs/api.md`.
+⚠️ **Duas coisas importantes sobre essa integração:**
+
+- **O JDoodle bloqueia chamadas diretas do navegador (CORS)** — a API
+  dele é feita pra ser chamada de servidor pra servidor. Por isso o
+  `compiler.js` chama `/api/compile` (uma rota do próprio `server.py`),
+  que repassa a chamada pro JDoodle do lado do servidor, onde CORS não
+  existe. Sem isso, o botão "Executar" nunca funcionaria a partir do navegador.
+- **Trade-off de segurança aceito neste sprint:** as credenciais ficam
+  salvas só no `localStorage` do seu navegador — nunca são commitadas no
+  repositório. Isso é seguro para um professor testando sozinho, mas
+  **não** para distribuir as mesmas credenciais entre várias turmas
+  (qualquer aluno com DevTools consegue ler, e o limite de 200/dia é
+  compartilhado). Detalhes completos e o plano para resolver isso (proxy
+  serverless de verdade, hospedado) estão em `docs/api.md`.
 
 ## O que este Sprint entrega
 
+- **`server.py`**: substitui o `http.server` simples. Serve os arquivos
+  estáticos igual antes, e também expõe `POST /api/compile` — um proxy
+  same-origin que resolve o bloqueio de CORS do JDoodle (ele não aceita
+  chamadas diretas do navegador).
 - **Terminal real com xterm.js**: cores ANSI (verde/vermelho), scroll,
   redimensionamento automático, botão de limpar.
 - **Compilação/execução real de C/C++** via JDoodle:

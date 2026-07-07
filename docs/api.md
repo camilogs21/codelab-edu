@@ -12,6 +12,31 @@ cobrança real, mas o professor preferiu não colocar cartão nisso).
 Trocamos para **JDoodle**, que dá **200 execuções grátis por dia** com
 só um cadastro por e-mail, sem pedir cartão no plano gratuito.
 
+## Bloqueio de CORS — descoberto durante o teste real do Sprint 3
+
+Depois de implementar a chamada direta do navegador pro JDoodle,
+descobrimos na prática que ele **bloqueia isso por CORS**: a API é
+desenhada para ser chamada de servidor pra servidor, e não devolve o
+cabeçalho `Access-Control-Allow-Origin` que o navegador exige pra
+liberar a resposta pra uma página web.
+
+Solução adotada: `server.py` (na raiz do projeto) substitui o
+`python3 -m http.server` simples. Ele serve os arquivos estáticos do
+mesmo jeito, mas também responde em `POST /api/compile` — recebe a
+chamada do navegador (mesma origem, sem problema de CORS), repassa pro
+JDoodle *do lado do servidor* (onde CORS não existe, é uma regra só do
+navegador) e devolve o resultado pro front-end.
+
+**Isso não substitui o proxy serverless ideal descrito abaixo** — é um
+proxy same-origin que roda localmente, só resolve o bloqueio técnico de
+CORS. As credenciais continuam vindo do navegador do professor e
+passando por esse servidor local a caminho do JDoodle. Quando este
+projeto for publicado num hospedeiro estático (GitHub Pages, Sprint 6+),
+`server.py` não vai rodar mais — nesse momento, uma função serverless de
+verdade (Cloudflare Workers, Vercel Functions, etc.) precisa assumir
+esse papel, escondendo as credenciais no servidor em vez de recebê-las
+do navegador a cada chamada.
+
 ## Trade-off de segurança assumido conscientemente
 
 O ideal — sempre válido, independente do provedor — seria nunca expor
@@ -58,13 +83,17 @@ por dentro, que agora faz uma chamada HTTP real pro JDoodle.
    (`state.settings.jdoodleClientId`/`jdoodleClientSecret`).
    - Se algum estiver ausente: retorna erro amigável pedindo para
      configurar, sem fazer nenhuma chamada de rede.
-4. Envia `POST` para `https://api.jdoodle.com/v1/execute` com
-   `{ clientId, clientSecret, script, stdin, language, versionIndex }`
+4. Envia `POST` para `/api/compile` (rota do `server.py`, mesma origem)
+   com `{ clientId, clientSecret, script, stdin, language, versionIndex }`
    (linguagem/versão vêm de `config.js`, `JDOODLE.languages`).
-5. JDoodle compila e executa em sandbox, devolve `{ output, error,
-   statusCode, isCompiled, isExecutionSuccess, ... }`.
-6. `compiler.js` traduz essa resposta pro formato do contrato acima.
-7. `terminal.js` (xterm.js) imprime o resultado com cores ANSI (verde =
+5. `server.py` repassa essa chamada pro JDoodle de verdade
+   (`https://api.jdoodle.com/v1/execute`) do lado do servidor, onde CORS
+   não existe.
+6. JDoodle compila e executa em sandbox, devolve `{ output, error,
+   statusCode, isCompiled, isExecutionSuccess, ... }` pro `server.py`,
+   que repassa isso pro navegador sem modificar.
+7. `compiler.js` traduz essa resposta pro formato do contrato acima.
+8. `terminal.js` (xterm.js) imprime o resultado com cores ANSI (verde =
    sucesso, vermelho = erro).
 
 ## Tratamento de erros já implementado
@@ -72,6 +101,7 @@ por dentro, que agora faz uma chamada HTTP real pro JDoodle.
 | Situação | Comportamento |
 |---|---|
 | Sem Client ID/Secret configurados | Mensagem pedindo para configurar, sem chamar a API |
+| Rodando `http.server` em vez de `server.py` (rota /api/compile não existe) | Mensagem explicando qual comando usar |
 | Credenciais inválidas | Mensagem específica sugerindo checar em Configurações |
 | Limite diário de 200 execuções atingido | Mensagem avisando para tentar amanhã |
 | Timeout (`JDOODLE.timeoutMs`, 15s) | Mensagem de timeout, sugerindo checar internet |

@@ -37,16 +37,24 @@ export const LANGUAGES = {
  * mesmo no tier de $0,00). O JDoodle oferece 200 chamadas grátis por dia
  * só com um cadastro por e-mail, sem cartão.
  *
- * IMPORTANTE — trade-off de segurança aceito conscientemente neste
- * sprint: o ideal é nunca expor client secret no front-end, usando um
- * proxy serverless. Como este projeto ainda não tem um backend
- * hospedado, o Client ID/Secret são fornecidos pelo PRÓPRIO PROFESSOR
- * através do painel de Configurações e ficam salvos só no localStorage
- * dele — nunca commitados no repositório, nunca hardcoded aqui. Ver
- * docs/api.md para o plano de resolver isso quando houver backend.
+ * IMPORTANTE — o JDoodle bloqueia chamadas diretas do navegador (CORS):
+ * a API dele foi feita para ser chamada de servidor pra servidor, não de
+ * dentro de uma página web. Por isso `compiler.js` NÃO chama
+ * `executeUrl` direto do front-end — ele chama `/api/compile`, uma rota
+ * do servidor local (`server.py`, na raiz do projeto), que repassa a
+ * chamada pro JDoodle do lado do servidor. `executeUrl` abaixo existe só
+ * como referência/documentação de qual endpoint o `server.py` chama.
+ *
+ * Trade-off de segurança que continua de pé mesmo com o proxy local: as
+ * credenciais ainda vêm do navegador do professor (localStorage) e
+ * passam pelo `server.py` a caminho do JDoodle — ele resolve o bloqueio
+ * técnico de CORS, mas não é, sozinho, "o proxy que esconde a chave"
+ * ideal (ver docs/api.md). Quando este projeto for publicado num
+ * hospedeiro estático (GitHub Pages, Sprint 6+), o `server.py` não roda
+ * mais — vai ser preciso uma função serverless de verdade.
  */
 export const JDOODLE = {
-  executeUrl: "https://api.jdoodle.com/v1/execute",
+  executeUrl: "https://api.jdoodle.com/v1/execute", // chamado só por server.py
   // Códigos de linguagem/versão do JDoodle (ver "Supported languages &
   // versions" na doc oficial — tabela atualizada em 03/07/2026).
   languages: {

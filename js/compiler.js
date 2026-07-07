@@ -1,14 +1,22 @@
 /**
  * compiler.js
  * Sprint 3: integração real com a API do JDoodle para compilar e
- * executar C/C++ — trocado do Judge0 (ver config.js e docs/api.md para
- * o motivo da troca: Judge0/RapidAPI exige cartão até no plano grátis).
- * O contrato público (`compileAndRun`) continua o mesmo definido no
- * Sprint 1 — só a implementação por dentro mudou.
+ * executar C/C++. O contrato público (`compileAndRun`) continua o mesmo
+ * definido no Sprint 1 — só a implementação por dentro mudou.
+ *
+ * Correção importante: o JDoodle bloqueia chamadas diretas do navegador
+ * (CORS) — a API dele é feita para ser chamada de servidor pra servidor.
+ * Por isso esta função não chama `api.jdoodle.com` diretamente; ela
+ * chama `/api/compile`, uma rota do próprio servidor local (ver
+ * `server.py` na raiz do projeto), que repassa a requisição pro JDoodle
+ * do lado do servidor, onde CORS não existe. Rodar `python3 server.py`
+ * em vez do `python3 -m http.server` simples é o que ativa essa rota.
  */
 
 import { JDOODLE } from "./config.js";
 import { get } from "./storage.js";
+
+const LOCAL_PROXY_URL = "/api/compile";
 
 /** Lê as credenciais salvas pelo professor no painel de Configurações. */
 function getCredentials() {
@@ -20,7 +28,8 @@ function getCredentials() {
 }
 
 /**
- * Compila e executa um código-fonte via JDoodle.
+ * Compila e executa um código-fonte via JDoodle (através do proxy local
+ * em server.py).
  * @param {string} code       Código-fonte C/C++.
  * @param {string} stdin      Entrada padrão fornecida pelo aluno.
  * @param {"c"|"cpp"} language
@@ -46,7 +55,7 @@ export async function compileAndRun(code, stdin = "", language = "cpp") {
   const timeout = setTimeout(() => controller.abort(), JDOODLE.timeoutMs);
 
   try {
-    const response = await fetch(JDOODLE.executeUrl, {
+    const response = await fetch(LOCAL_PROXY_URL, {
       method: "POST",
       signal: controller.signal,
       headers: { "content-type": "application/json" },
@@ -60,12 +69,23 @@ export async function compileAndRun(code, stdin = "", language = "cpp") {
       }),
     });
 
+    if (response.status === 404) {
+      return {
+        stdout: "",
+        stderr:
+          "Rota /api/compile não encontrada. Você está rodando 'python3 -m http.server'? " +
+          "Use 'python3 server.py' no lugar dele — é ele que sabe conversar com o JDoodle.",
+        exitCode: 1,
+        compileOutput: "",
+      };
+    }
+
     const data = await response.json();
 
     if (!response.ok) {
       return {
         stdout: "",
-        stderr: `Falha ao contactar o serviço de compilação (HTTP ${response.status}).`,
+        stderr: data.error || `Falha ao contactar o serviço de compilação (HTTP ${response.status}).`,
         exitCode: 1,
         compileOutput: "",
       };
@@ -108,7 +128,7 @@ export async function compileAndRun(code, stdin = "", language = "cpp") {
       stdout: "",
       stderr: timedOut
         ? "Tempo de compilação esgotado. O serviço pode estar indisponível — verifique sua internet."
-        : `Não foi possível conectar ao serviço de compilação: ${err.message}`,
+        : `Não foi possível conectar ao servidor local: ${err.message}`,
       exitCode: 1,
       compileOutput: "",
     };

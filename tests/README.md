@@ -9,6 +9,7 @@ entrega de sprint:
 
 ## Checklist do Sprint 3
 
+- [ ] Rodar com `python3 server.py` (não `http.server`) — sem isso, o proxy /api/compile não existe
 - [ ] Abrir Configurações (engrenagem), colar Client ID + Client Secret válidos do JDoodle e salvar
 - [ ] Recarregar a página — as credenciais continuam salvas (persistidas)
 - [ ] Clicar em "Executar" sem credenciais configuradas → mensagem clara pedindo pra configurar, sem travar a UI

@@ -7,6 +7,7 @@ CodeLabEDU/
 ├── index.html
 ├── manifest.json        # stub — PWA real no Sprint 6
 ├── service-worker.js     # stub — não registrado ainda
+├── server.py             # servidor local com proxy /api/compile (Sprint 3, resolve CORS do JDoodle)
 ├── assets/{icons,images,sounds}
 ├── css/…
 ├── js/…
