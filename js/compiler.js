@@ -83,9 +83,26 @@ export async function compileAndRun(code, stdin = "", language = "cpp") {
     const data = await response.json();
 
     if (!response.ok) {
+      const message = String(data.error || "");
+      if (/limit/i.test(message)) {
+        return {
+          stdout: "",
+          stderr: "Limite diário de 200 execuções do JDoodle atingido. Tente novamente amanhã.",
+          exitCode: 1,
+          compileOutput: "",
+        };
+      }
+      if (/invalid/i.test(message) || response.status === 401) {
+        return {
+          stdout: "",
+          stderr: "Client ID/Secret inválidos. Confira em Configurações.",
+          exitCode: 1,
+          compileOutput: "",
+        };
+      }
       return {
         stdout: "",
-        stderr: data.error || `Falha ao contactar o serviço de compilação (HTTP ${response.status}).`,
+        stderr: message || `Falha ao contactar o serviço de compilação (HTTP ${response.status}).`,
         exitCode: 1,
         compileOutput: "",
       };
