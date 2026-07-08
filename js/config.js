@@ -82,6 +82,6 @@ export const EDITOR_DEFAULTS = {
  *  tags <script>/<link> em index.html. Pacote migrado para o escopo
  *  @xterm/* (o pacote antigo "xterm" está descontinuado). */
 export const TERMINAL_DEFAULTS = {
-  xtermVersion: "6.0.0",
-  fitAddonVersion: "0.11.0",
+  xtermVersion: "5.5.0",
+  fitAddonVersion: "0.10.0",
 };
