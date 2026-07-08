@@ -11,16 +11,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- Monaco Editor via CDN (Sprint 2). Carregado como AMD; o require.config
-     aponta a base 'vs' para o CDN. Sprint 6 baixa esses arquivos para
-     servir localmente e permitir uso 100% offline. -->
-<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs/loader.js"></script>
-
-<!-- Terminal real via xterm.js (Sprint 3). Mesmo aviso do Monaco: o
-     Sprint 6 baixa esses arquivos para servir localmente. -->
+<!-- Terminal real via xterm.js (Sprint 3). IMPORTANTE: precisa carregar
+     ANTES do loader do Monaco, senao o xterm detecta (falsamente) um
+     ambiente AMD criado pelo Monaco e nunca expoe window.Terminal. -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.min.js"></script>
+
+<!-- Monaco Editor via CDN (Sprint 2). Carregado como AMD. -->
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs/loader.js"></script>
 
 <!-- Design tokens primeiro, depois os módulos de layout -->
 <link rel="stylesheet" href="css/themes.css">
