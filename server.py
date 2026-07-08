@@ -51,7 +51,11 @@ class CodeLabRequestHandler(SimpleHTTPRequestHandler):
         request = urllib.request.Request(
             JDOODLE_EXECUTE_URL,
             data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "User-Agent": "Mozilla/5.0 (compatible; CodeLabEDU/1.0)",
+            },
             method="POST",
         )
 
@@ -61,11 +65,22 @@ class CodeLabRequestHandler(SimpleHTTPRequestHandler):
                 self._send_raw_json(response.status, response_body)
         except urllib.error.HTTPError as err:
             error_body = err.read()
-            self._send_raw_json(err.code, error_body)
+            self._send_error_as_json(err.code, error_body)
         except urllib.error.URLError as err:
             self._send_json(502, {"error": f"Falha ao contactar o JDoodle: {err.reason}"})
         except TimeoutError:
             self._send_json(504, {"error": "Tempo de compilacao esgotado."})
+
+    def _send_error_as_json(self, status, raw_bytes):
+        try:
+            json.loads(raw_bytes)
+            self._send_raw_json(status, raw_bytes)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            self._send_json(status, {
+                "error": f"O JDoodle recusou a requisicao (HTTP {status}). "
+                         "Confira se o Client ID/Secret estao corretos e se a conta "
+                         "ainda tem execucoes disponiveis hoje."
+            })
 
     def _send_json(self, status, data):
         self._send_raw_json(status, json.dumps(data).encode("utf-8"))
@@ -79,8 +94,6 @@ class CodeLabRequestHandler(SimpleHTTPRequestHandler):
         self.wfile.write(raw_bytes)
 
     def log_message(self, format, *args):
-        # Mantem o log padrao do http.server (util pra depurar), so
-        # centralizado aqui para ficar explicito que e proposital.
         super().log_message(format, *args)
 
 
