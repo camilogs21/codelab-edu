@@ -28,7 +28,7 @@ import json
 import sys
 import urllib.request
 import urllib.error
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 JDOODLE_EXECUTE_URL = "https://api.jdoodle.com/v1/execute"
 
@@ -99,7 +99,7 @@ class CodeLabRequestHandler(SimpleHTTPRequestHandler):
 
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
-    server = HTTPServer(("0.0.0.0", port), CodeLabRequestHandler)
+    server = ThreadingHTTPServer(("0.0.0.0", port), CodeLabRequestHandler)
     print(f"CodeLab EDU servindo em http://localhost:{port}  (Ctrl+C para parar)")
     print("Proxy de compilacao ativo em POST /api/compile (resolve o bloqueio de CORS do JDoodle)")
     try:
